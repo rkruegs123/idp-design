@@ -72,20 +72,15 @@ def run(args):
     min_n_eff = int(n_ref_states * min_neff_factor)
     max_approx_iters = args['max_approx_iters']
 
-    use_gumbel = args['use_gumbel']
     gumbel_end = args['gumbel_end']
     gumbel_start = args['gumbel_start']
     gumbel_temps = onp.linspace(gumbel_start, gumbel_end, n_iters)
-    # gumbel_temps = onp.linspace(0.1, 3.0, 100)**3
 
 
     def normalize(logits, temp, norm_key):
-        if use_gumbel:
-            gumbel_weights = jax.random.gumbel(norm_key, logits.shape)
-            # pseq = jax.nn.softmax((logits + gumbel_weights) / temp)
-            pseq = jax.nn.softmax(logits / temp)
-        else:
-            pseq = jax.nn.softmax(logits)
+        gumbel_weights = jax.random.gumbel(norm_key, logits.shape)
+        # pseq = jax.nn.softmax((logits + gumbel_weights) / temp)
+        pseq = jax.nn.softmax(logits / temp)
 
         return pseq
 
@@ -429,21 +424,19 @@ def get_parser():
     )
     parser.add_argument('--run-name', type=str, help='Run name')
 
-    parser.add_argument('--n-iters', type=int, default=100,
+    parser.add_argument('--n-iters', type=int, default=50,
                         help="Number of iterations of gradient descent")
     parser.add_argument('--lr', type=float, default=0.1,
                         help="Learning rate")
-    parser.add_argument('--min-neff-factor', type=float, default=0.95,
+    parser.add_argument('--min-neff-factor', type=float, default=0.90,
                         help="Factor for determining min Neff")
-    parser.add_argument('--max-approx-iters', type=int, default=3,
+    parser.add_argument('--max-approx-iters', type=int, default=5,
                         help="Maximum number of iterations before resampling")
-    parser.add_argument('--seq-length', type=int, default=100,
+    parser.add_argument('--seq-length', type=int, default=50,
                         help="Sequence length")
     parser.add_argument('--target-rg', type=float, default=0.0,
                         help="Target radius of gyration in Angstroms")
 
-    parser.add_argument('--use-gumbel', action='store_true',
-                        help="If true, will use gumbel softmax with an annealing temperature")
     parser.add_argument('--gumbel-start', type=float, default=1.0,
                         help="Starting temperature for gumbel softmax")
     parser.add_argument('--gumbel-end', type=float, default=0.01,
@@ -453,11 +446,11 @@ def get_parser():
     parser.add_argument('--key', type=int, default=0)
     parser.add_argument('--out-box-size', type=float, default=200.0,
                         help="Length of the box for injavis visualization")
-    parser.add_argument('--n-sims', type=int, default=5,
+    parser.add_argument('--n-sims', type=int, default=15,
                         help="Number of independent simulations")
     parser.add_argument('--n-eq-steps', type=int, default=10000,
                         help="Number of equilibration steps")
-    parser.add_argument('--n-sample-steps', type=int, default=200000,
+    parser.add_argument('--n-sample-steps', type=int, default=500000,
                         help="Number of steps from which to sample states")
     parser.add_argument('--sample-every', type=int, default=1000,
                         help="Frequency of sampling reference states.")
