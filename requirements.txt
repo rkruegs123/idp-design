@@ -1,9 +1,10 @@
 jax==0.4.31
-jax_md.egg==info
+jax_md @ git+https://github.com/jax-md/jax-md.git@05221c551e71f1b5f64458c0e3533452c22efec0
 matplotlib==3.8.3
 numpy==1.24.4
 optax==0.1.5
 pandas==1.4.4
 seaborn==0.13.2
-sparrow==0.2.2+32.gb8ba08d
+cython==3.0.9
+numpy==1.24.4
 tqdm==4.64.0
