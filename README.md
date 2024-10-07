@@ -23,10 +23,6 @@ Lastly, install [sparrow](https://github.com/idptools/sparrow) via
 ```
 pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
 ```
-You'll also want to make a directory to store all your results. The default location for saving results is `idp-design/output`. So, run
-```
-mkdir output
-```
 
 ## Usage
 
