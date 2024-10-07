@@ -1,4 +1,5 @@
-jax==0.4.31
+--find-links https://storage.googleapis.com/jax-releases/jax_releases.html
+jax[cuda]==0.4.31
 jax_md @ git+https://github.com/jax-md/jax-md.git@05221c551e71f1b5f64458c0e3533452c22efec0
 matplotlib==3.8.3
 numpy==1.24.4
