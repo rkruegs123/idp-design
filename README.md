@@ -14,7 +14,7 @@ Next, activate your new environment:
 ```
 mamba activate ENV-NAME
 ```
-Then, navigate to this directory and install the required packages:
+Then, navigate to this directory and install the required packages. Note that by default, we install the CUDA-compatible version of JAX. If you would like to install the CPU-only version, please remove the corresponding line from `requirements.txt` and install JAX manually (see [here](https://jax.readthedocs.io/en/latest/installation.html) for instructions):
 ```
 cd path/to/idp-design
 pip install -r requirements.txt
