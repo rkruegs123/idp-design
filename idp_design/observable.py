@@ -4,7 +4,8 @@ from jax_md import space
 
 
 def compute_com(R, mass):
-    com = jnp.sum(jnp.multiply(R, jnp.expand_dims(mass, axis=1)), axis=0) / jnp.sum(mass)
+    weighted_sum = jnp.sum(jnp.multiply(R, jnp.expand_dims(mass, axis=1)), axis=0)
+    com = weighted_sum / jnp.sum(mass)
     return com
 
 def rg(R, mass, displacement_fn):

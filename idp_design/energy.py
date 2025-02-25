@@ -49,12 +49,16 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
             ires = seq[i]
             jres = seq[j]
 
-            wf_val = wang_frenkel(r, r_c=rc_table[ires, jres], sigma=sigma_table[ires, jres],
-                                  nu=nu_table[ires, jres], mu=mu_table[ires, jres],
-                                  eps=eps_table[ires, jres])
-            coul_val = coul(r, qij=jnp.array([charges[ires], charges[jres]]),
-                            eps=debye_relative_dielectric, k=debye_kappa,
-                            r_c=cutoff_table[ires, jres])
+            wf_val = wang_frenkel(
+                r, r_c=rc_table[ires, jres], sigma=sigma_table[ires, jres],
+                nu=nu_table[ires, jres], mu=mu_table[ires, jres],
+                eps=eps_table[ires, jres]
+            )
+            coul_val = coul(
+                r, qij=jnp.array([charges[ires], charges[jres]]),
+                eps=debye_relative_dielectric, k=debye_kappa,
+                r_c=cutoff_table[ires, jres]
+            )
 
             val = wf_val + coul_val
             # val = jnp.where(r > 35, 0.0, val)
@@ -68,18 +72,23 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
 
             return harmonic_spring(r, r0=spring_r0, k=spring_k)
 
-        total_bonded_val = jnp.sum(vmap(pairwise_bonded)(bonded_nbrs[:, 0], bonded_nbrs[:, 1]))
-        all_unbonded_vals, (wf_val, coul_val) = vmap(pairwise_unbonded)(unbonded_nbrs[:, 0], unbonded_nbrs[:, 1])
+        bnd_i = bonded_nbrs[:, 0]
+        bnd_j = bonded_nbrs[:, 1]
+        total_bonded_val = jnp.sum(vmap(pairwise_bonded)(bnd_i, bnd_j))
+        ub_i = unbonded_nbrs[:, 0]
+        ub_j = unbonded_nbrs[:, 1]
+        all_unbonded_vals, (wf_val, coul_val) = vmap(pairwise_unbonded)(ub_i, ub_j)
         total_unbonded_val = jnp.sum(all_unbonded_vals)
         total_wf_val = jnp.sum(wf_val)
         total_coul_val = jnp.sum(coul_val)
 
         total_energy = total_bonded_val + total_unbonded_val
-        return total_energy, (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val)
-        # return total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val
+        aux = (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val)
+        return total_energy, aux
 
     def energy_fn(R, seq, unbonded_nbrs=base_unbonded_nbrs):
-        total_energy, (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val) = subterms_fn(R, seq, unbonded_nbrs)
+        total_energy, aux = subterms_fn(R, seq, unbonded_nbrs)
+        (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val) = aux
         return total_energy
 
     return subterms_fn, energy_fn

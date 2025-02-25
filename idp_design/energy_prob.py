@@ -103,23 +103,25 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
 
             return utils.harmonic_spring(r, r0=utils.spring_r0, k=spring_k)
 
-        total_bonded_val = jnp.sum(vmap(pairwise_bonded)(bonded_nbrs[:, 0], bonded_nbrs[:, 1]))
+        bnd_i = bonded_nbrs[:, 0]
+        bnd_j = bonded_nbrs[:, 1]
+        total_bonded_val = jnp.sum(vmap(pairwise_bonded)(bnd_i, bnd_j))
         all_unbonded_vals, (wf_val, coul_val) = vmap(pairwise_unbonded)(ub_i, ub_j)
 
         total_unbonded_val = jnp.where(mask, all_unbonded_vals, 0.0).sum()
-        # total_unbonded_val = jnp.sum(all_unbonded_vals)
-
-        # total_wf_val = jnp.sum(wf_val)
         total_wf_val = jnp.where(mask, wf_val, 0.0).sum()
-
-        # total_coul_val = jnp.sum(coul_val)
         total_coul_val = jnp.where(mask, coul_val, 0.0).sum()
 
         total_energy = total_bonded_val + total_unbonded_val
 
         return total_energy, (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val)
 
-    def energy_fn(R, pseq, unbonded_nbrs=base_unbonded_nbrs, debye_kappa=default_debye_kappa):
+    def energy_fn(
+        R,
+        pseq,
+        unbonded_nbrs=base_unbonded_nbrs,
+        debye_kappa=default_debye_kappa
+    ):
         total_energy, _ = subterms_fn(R, pseq, unbonded_nbrs, debye_kappa)
         return total_energy
 

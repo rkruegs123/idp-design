@@ -124,9 +124,11 @@ def random_pseq(n):
         p_seq[i] /= onp.sum(p_seq[i])
     return p_seq
 
-def get_charge_constrained_pseq(n, pos_charge_ratio, neg_charge_ratio, unconstrained_logit=10.0,
-                                constrained_pos_charge_residues=pos_charge_residues,
-                                constrained_neg_charge_residues=neg_charge_residues):
+def get_charge_constrained_pseq(
+    n, pos_charge_ratio, neg_charge_ratio, unconstrained_logit=10.0,
+    constrained_pos_charge_residues=pos_charge_residues,
+    constrained_neg_charge_residues=neg_charge_residues
+):
     assert(pos_charge_ratio > 0.0 and pos_charge_ratio <= 1.0)
     assert(neg_charge_ratio > 0.0 and neg_charge_ratio <= 1.0)
     assert(pos_charge_ratio + neg_charge_ratio < 1.0) # to avoid division by 0
@@ -446,11 +448,12 @@ def dump_pos(traj, filename, box_size, seq=None):
             particle_type_str += f'def {res} "sphere 3.81 {COLOR_MAPPER[res]}"'
             particle_type_str += " \n"
 
+    box_def = f"boxMatrix {box_size} 0 0 0 {box_size} 0 0 0 {box_size}\n"
     for pos_idx in tqdm(range(n_states)):
         pos = traj[pos_idx]
         pos -= jnp.array([box_size/2, box_size/2, box_size/2])
         with open(filename, 'a') as outfile:
-            outfile.write('boxMatrix '+ str(box_size) + ' 0 0 0 ' + str(box_size) + ' 0 0 0 ' + str(box_size) + ' \n')
+            outfile.write(box_def)
             # outfile.write(f'def R "sphere 3.81 {color}" \n')
             outfile.write(particle_type_str)
             for p_idx, position in enumerate(pos):
@@ -521,7 +524,9 @@ def sample_discrete_seqs(pseq, nsamples, key):
         cumulative_probabilities = jnp.cumsum(pseq, axis=1)
 
         # Determine index where the cumulative probability first exceeds the random sample
-        sampled_indices = jnp.sum(cumulative_probabilities < uniform_samples[:, None], axis=1)
+        sampled_indices = jnp.sum(
+            cumulative_probabilities < uniform_samples[:, None], axis=1
+        )
 
         return sampled_indices
 
