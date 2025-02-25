@@ -25,6 +25,15 @@ pip install -e .
 ```
 This allows you to modify the code and have changes reflected immediately without reinstalling.
 
+Lastly, install [`sparrow`](https://github.com/idptools/sparrow) via
+```sh
+pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
+```
+and install [`JAX-MD`](https://github.com/jax-md/jax-md) via
+```sh
+pip install https://github.com/jax-md/jax-md/archive/main.zip
+```
+
 
 ## **Testing**
 To ensure everything is working correctly, run:

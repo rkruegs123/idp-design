@@ -4,16 +4,19 @@ version = "0.1.0"
 description = "Probabilistic sequence-based simulation and optimization of IDPs"
 authors = [{name = "Ryan Krueger", email = "ryan_krueger@g.harvard.edu"}]
 dependencies = [
-    "jax==0.4.31",
-    "matplotlib==3.8.3",
-    "numpy==1.24.4",
-    "optax==0.1.5",
-    "pandas==1.4.4",
-    "seaborn==0.13.2",
-    "tqdm==4.64.0",
-    "sparrow @ git+https://git@github.com/idptools/sparrow.git@b8ba08d",
-    "jax-md @ https://github.com/jax-md/jax-md/archive/main.zip"
+    "pytest",
+    "cython",
+    "jax>=0.4.31",
+    "matplotlib>=3.8.3",
+    "numpy>=1.24.4",
+    "optax>=0.1.5",
+    "pandas>=1.4.4",
+    "seaborn>=0.13.2",
+    "tqdm>=4.64.0",
 ]
+
+[tool.setuptools]
+packages = ["idp_design"]
 
 # Ruff Configuration
 [tool.ruff]
