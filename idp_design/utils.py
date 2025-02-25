@@ -250,7 +250,7 @@ def read_log_file(fpath):
 
     assert(start_idx != -1 and end_idx != -1)
     df_lines = lines[start_idx:end_idx]
-    log_df = pd.read_csv(io.StringIO('\n'.join(df_lines)), delim_whitespace=True)
+    log_df = pd.read_csv(io.StringIO('\n'.join(df_lines)), sep=r'\s+')
 
     return log_df
 
@@ -273,7 +273,7 @@ def read_traj_file(fpath, n_atoms):
 
         frame_pos_lines = lines[frame_start+9:frame_start+n_lines_per_frame]
         frame_df = pd.read_csv(
-            io.StringIO('\n'.join(frame_pos_lines)), delim_whitespace=True,
+            io.StringIO('\n'.join(frame_pos_lines)), sep=r'\s+',
             header=None, names=["id", "mol", "type", "q", "xu", "yu", "zu"]
         )
 
@@ -290,8 +290,10 @@ def read_traj_file(fpath, n_atoms):
 WF_GG_PATH = "params/wf_gg.txt"
 WF_PATH = "params/wf.txt"
 def read_wf(fpath=WF_GG_PATH):
-    wf_df = pd.read_csv(fpath, delim_whitespace=True, header=None,
-                        names=["res1", "res2", "eps", "sigma", "nu", "mu", "rc"])
+    wf_df = pd.read_csv(
+        fpath, sep=r'\s+', header=None,
+        names=["res1", "res2", "eps", "sigma", "nu", "mu", "rc"]
+    )
 
     eps_table = onp.zeros((NUM_RESIDUES, NUM_RESIDUES))
     sigma_table = onp.zeros((NUM_RESIDUES, NUM_RESIDUES))
@@ -331,8 +333,10 @@ def read_wf(fpath=WF_GG_PATH):
 DEBYE_GG_PATH = "params/debye_gg.txt"
 DEBYE_PATH = "params/debye.txt"
 def read_debye(default_cutoff=0.0, fpath=DEBYE_GG_PATH):
-    debye_df = pd.read_csv(fpath, delim_whitespace=True, header=None,
-                           names=["res1", "res2", "cutoff"])
+    debye_df = pd.read_csv(
+        fpath, sep=r'\s+', header=None,
+        names=["res1", "res2", "cutoff"]
+    )
 
     cutoff_table = onp.zeros((NUM_RESIDUES, NUM_RESIDUES))
 
@@ -539,7 +543,7 @@ def sample_discrete_seqs(pseq, nsamples, key):
 
 
 def get_kappa(salt_conc, use_gg=True):
-    # note: salt_conc is in mM
+    """Computes the inverse Debye screening length from a salt concentration in mM."""
     if use_gg:
         default_kappa = DEBYE_KAPPA_GG
     else:
