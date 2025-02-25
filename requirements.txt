@@ -1,9 +1,0 @@
-jax==0.4.31
-jax_md.egg==info
-matplotlib==3.8.3
-numpy==1.24.4
-optax==0.1.5
-pandas==1.4.4
-seaborn==0.13.2
-sparrow==0.2.2+32.gb8ba08d
-tqdm==4.64.0

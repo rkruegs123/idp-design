@@ -9,8 +9,46 @@ import idp_design.utils as utils
 jax.config.update("jax_enable_x64", True)
 
 
-def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
 
+
+def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
+    """Generates energy functions for bonded and unbonded interactions.
+
+    This function constructs two energy functions:
+    - `subterms_fn`: Computes individual energy contributions, including
+      total bonded, total unbonded, Wang-Frenkel, and Coulomb interactions.
+    - `energy_fn`: Computes the total energy of the system.
+
+    The function supports two parameter sets (`use_gg=True/False`), which determine
+    the values used for Debye screening and Wang-Frenkel potentials.
+
+    Args:
+        bonded_nbrs (jnp.ndarray): A `(m, 2)` JAX array specifying `m` bonded
+            neighbor pairs.
+        base_unbonded_nbrs (jnp.ndarray): A `(p, 2)` JAX array specifying `p`
+            unbonded neighbor pairs.
+        displacement_fn (Callable): A function that computes displacement vectors
+            between two positions, following JAX-MD conventions.
+        use_gg (bool, optional): If `True`, uses the Mpipi-GG force field vs. the
+            standard Mpipi force field, which affects the Debye and Wang-Frenkel
+            parameters. Defaults to `True`.
+
+    Returns:
+        tuple:
+            - subterms_fn (Callable): A function `subterms_fn(R, seq, unbonded_nbrs)`
+              that computes total energy and individual energy terms.
+            - energy_fn (Callable): A function `energy_fn(R, seq, unbonded_nbrs)`
+              that computes only the total energy.
+
+    Example:
+        >>> bonded_nbrs = jnp.array([[0, 1], [1, 2]])
+        >>> unbonded_nbrs = jnp.array([[0, 2]])
+        >>> disp_fn = lambda r1, r2: r2 - r1  # Simple Euclidean displacement
+        >>> subterms_fn, energy_fn = get_energy_fn(bonded_nbrs, unbonded_nbrs, disp_fn)
+        >>> R = jnp.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+        >>> seq = jnp.array([0, 1, 2])  # Example amino acid indices
+        >>> total_energy = energy_fn(R, seq)
+    """
     if use_gg:
         debye_kappa = utils.DEBYE_KAPPA_GG
         debye_path = utils.DEBYE_GG_PATH

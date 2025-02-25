@@ -1,9 +1,26 @@
-# Ruff Configuration (ruff.toml)
+[project]
+name = "idp-design"
+version = "0.1.0"
+description = "Probabilistic sequence-based simulation and optimization of IDPs"
+authors = [{name = "Ryan Krueger", email = "ryan_krueger@g.harvard.edu"}]
+dependencies = [
+    "jax==0.4.31",
+    "matplotlib==3.8.3",
+    "numpy==1.24.4",
+    "optax==0.1.5",
+    "pandas==1.4.4",
+    "seaborn==0.13.2",
+    "tqdm==4.64.0",
+    "sparrow @ git+https://git@github.com/idptools/sparrow.git@b8ba08d",
+    "jax-md @ https://github.com/jax-md/jax-md/archive/main.zip"
+]
+
+# Ruff Configuration
 [tool.ruff]
 line-length = 88
 target-version = "py310"
 
-# Linting rules
+## Linting rules
 select = [
     "E", "F", "W",    # Pyflakes + Pycodestyle (errors, warnings)
     "C90",            # McCabe complexity checks
@@ -12,18 +29,22 @@ select = [
     "UP",             # Pyupgrade (suggests modern Python syntax)
 ]
 
-# Ignore some warnings
+## Ignore some warnings
 ignore = [
     "D100",  # Missing docstring in public module
     "D104",  # Missing docstring in package
 ]
 
-# Formatting (like Black)
+## Formatting (like Black)
 [tool.ruff.format]
 quote-style = "double"  # Enforce double quotes
 indent-style = "space"
 line-ending = "lf"
 
-# Docstring settings
+## Docstring settings
 [tool.ruff.pydocstyle]
 convention = "google"  # Other options: "numpy", "pep257"
+
+# Pytest Configuration
+[tool.pytest.ini_options]
+pythonpath = "."

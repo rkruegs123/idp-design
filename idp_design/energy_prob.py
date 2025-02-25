@@ -1,4 +1,3 @@
-
 import jax
 import jax.numpy as jnp
 from jax import vmap
@@ -13,7 +12,54 @@ mapped_wang_frenkel = vmap(utils._wang_frenkel, in_axes=(None, 0, 0, 0, 0 ,0))
 mapped_coul = vmap(utils._coul, in_axes=(None, 0, None, None, 0))
 
 def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
+    """Generates energy functions for a probabilistic sequence representation.
 
+    This function constructs two energy functions:
+    - `subterms_fn`: Computes individual energy contributions, including
+      total bonded, total unbonded, Wang-Frenkel, and Coulomb interactions
+      based on a **probabilistic sequence** representation.
+    - `energy_fn`: Computes the total expected energy of the system.
+
+    Unlike standard energy functions for discrete sequences, this function
+    computes the **expected energy** by marginalizing over all possible
+    amino acid pairings at each position using the probability matrix `pseq`.
+
+    The function supports two parameter sets (`use_gg=True/False`), which determine
+    the values used for Debye screening and Wang-Frenkel potentials.
+
+    Args:
+        bonded_nbrs (jnp.ndarray): A `(m, 2)` JAX array specifying `m` bonded
+            neighbor pairs.
+        base_unbonded_nbrs (jnp.ndarray): A `(p, 2)` JAX array specifying `p`
+            unbonded neighbor pairs.
+        displacement_fn (Callable): A function that computes displacement vectors
+            between two positions, following JAX-MD conventions.
+        use_gg (bool, optional): If `True`, uses the Mpipi-GG force field instead
+            of the standard Mpipi force field, affecting the Debye and Wang-Frenkel
+            parameters. Defaults to `True`.
+
+    Returns:
+        tuple:
+            - subterms_fn (Callable): A function
+              `subterms_fn(R, pseq, unbonded_nbrs, debye_kappa)` that computes
+              total expected energy and individual energy terms.
+            - energy_fn (Callable): A function
+              `energy_fn(R, pseq, unbonded_nbrs, debye_kappa)` that computes only
+              the total expected energy.
+
+    Example:
+        >>> bonded_nbrs = jnp.array([[0, 1], [1, 2]])
+        >>> unbonded_nbrs = jnp.array([[0, 2]])
+        >>> disp_fn = lambda r1, r2: r2 - r1  # Simple Euclidean displacement
+        >>> subterms_fn, energy_fn = get_energy_fn(bonded_nbrs, unbonded_nbrs, disp_fn)
+        >>> R = jnp.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+        >>> pseq = jnp.array([
+        ...     [0.5, 0.5] + [0.0] * 18,  # 50% 'M', 50% 'G' at position 0
+        ...     [0.0, 1.0] + [0.0] * 18,  # 100% 'G' at position 1
+        ...     [0.3, 0.2, 0.5] + [0.0] * 17  # Mixed distribution at position 2
+        ... ])
+        >>> total_energy = energy_fn(R, pseq)
+    """
     if use_gg:
         default_debye_kappa = utils.DEBYE_KAPPA_GG
         debye_path = utils.DEBYE_GG_PATH
