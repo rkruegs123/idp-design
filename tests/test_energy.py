@@ -33,23 +33,23 @@ def test_no_warnings():
     ("data_fpath", "log_fpath", "traj_fpath", "tol_places", "use_gg"),
     [
         (
-            "refdata/LAMMPS/20231101_single_chain/K25/K25.dat",
-            "refdata/LAMMPS/20231101_single_chain/K25/log.lammps",
-            "refdata/LAMMPS/20231101_single_chain/K25/result.lammpstrj",
+            "data/LAMMPS/20231101_single_chain/K25/K25.dat",
+            "data/LAMMPS/20231101_single_chain/K25/log.lammps",
+            "data/LAMMPS/20231101_single_chain/K25/result.lammpstrj",
             1,
             False
         ),
         (
-            "refdata/LAMMPS/20231102_sc_high_precision/K25/K25.dat",
-            "refdata/LAMMPS/20231102_sc_high_precision/K25/log.lammps",
-            "refdata/LAMMPS/20231102_sc_high_precision/K25/result.lammpstrj",
+            "data/LAMMPS/20231102_sc_high_precision/K25/K25.dat",
+            "data/LAMMPS/20231102_sc_high_precision/K25/log.lammps",
+            "data/LAMMPS/20231102_sc_high_precision/K25/result.lammpstrj",
             3,
             False
         ),
         (
-            "refdata/LAMMPS/20231101_single_chain/ACTR/ACTR.dat",
-            "refdata/LAMMPS/20231101_single_chain/ACTR/log.lammps",
-            "refdata/LAMMPS/20231101_single_chain/ACTR/result.lammpstrj",
+            "data/LAMMPS/20231101_single_chain/ACTR/ACTR.dat",
+            "data/LAMMPS/20231101_single_chain/ACTR/log.lammps",
+            "data/LAMMPS/20231101_single_chain/ACTR/result.lammpstrj",
             1,
             False
         ),

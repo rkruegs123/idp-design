@@ -6,7 +6,7 @@ authors = [{name = "Ryan Krueger", email = "ryan_krueger@g.harvard.edu"}]
 dependencies = [
     "pytest",
     "cython",
-    "jax>=0.4.31",
+    "jax==0.4.31",
     "matplotlib>=3.8.3",
     "numpy>=1.24.4",
     "optax>=0.1.5",

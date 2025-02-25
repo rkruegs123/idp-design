@@ -57,16 +57,16 @@ def brute_force(pseq, R, bonded_nbrs, unbonded_nbrs, displacement_fn):
     ("data_fpath", "log_fpath", "traj_fpath", "tol_places", "use_gg"),
     [
         (
-            "refdata/LAMMPS/20231102_sc_high_precision/K25/K25.dat",
-            "refdata/LAMMPS/20231102_sc_high_precision/K25/log.lammps",
-            "refdata/LAMMPS/20231102_sc_high_precision/K25/result.lammpstrj",
+            "data/LAMMPS/20231102_sc_high_precision/K25/K25.dat",
+            "data/LAMMPS/20231102_sc_high_precision/K25/log.lammps",
+            "data/LAMMPS/20231102_sc_high_precision/K25/result.lammpstrj",
             3,
             False
         ),
         (
-            "refdata/MPIPI-GG/P53/P53.dat",
-            "refdata/MPIPI-GG/P53/log.lammps",
-            "refdata/MPIPI-GG/P53/result.lammpstrj",
+            "data/MPIPI-GG/P53/P53.dat",
+            "data/MPIPI-GG/P53/log.lammps",
+            "data/MPIPI-GG/P53/result.lammpstrj",
             3,
             True
         ),
