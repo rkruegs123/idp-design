@@ -77,5 +77,16 @@ If you have suggestions, feel free to **open an issue** or **submit a pull reque
 
 ---
 
-## **License**
-This project is licensed under the **MIT License**.
+# Citation
+
+If you wish to cite this work, please cite the following .bib:
+```
+@article{krueger2024generalized,
+  title={Generalized design of sequence-ensemble-function relationships for intrinsically disordered proteins},
+  author={Krueger, Ryan and Brenner, Michael P and Shrinivas, Krishna},
+  journal={bioRxiv},
+  pages={2024--10},
+  year={2024},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
