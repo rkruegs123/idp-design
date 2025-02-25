@@ -1,21 +1,17 @@
-import pdb
-import numpy as onp
-import pandas as pd
-import random
 import itertools
 import unittest
-import matplotlib.pyplot as plt
-import seaborn as sns
-from tqdm import tqdm
 from pathlib import Path
 
 import jax
 import jax.numpy as jnp
-from jax import vmap, jit
+import matplotlib.pyplot as plt
+import numpy as onp
+from jax import jit, vmap
 from jax_md import space
+from tqdm import tqdm
 
-from idp_design.utils import RES_ALPHA, NUM_RESIDUES, N20
 import idp_design.utils as utils
+from idp_design.utils import NUM_RESIDUES, RES_ALPHA
 
 jax.config.update("jax_enable_x64", True)
 
@@ -70,7 +66,12 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
     pair_charges = jnp.array(pair_charges)
 
 
-    def subterms_fn(R, pseq, unbonded_nbrs=base_unbonded_nbrs, debye_kappa=default_debye_kappa):
+    def subterms_fn(
+        R,
+        pseq,
+        unbonded_nbrs=base_unbonded_nbrs,
+        debye_kappa=default_debye_kappa
+    ):
 
         ub_i = unbonded_nbrs[:, 0]
         ub_j = unbonded_nbrs[:, 1]
@@ -109,7 +110,7 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
             return utils.harmonic_spring(r, r0=utils.spring_r0, k=spring_k)
 
         total_bonded_val = jnp.sum(vmap(pairwise_bonded)(bonded_nbrs[:, 0], bonded_nbrs[:, 1]))
-        all_unbonded_vals, (wf_val, coul_val) = vmap(pairwise_unbonded)(unbonded_nbrs[:, 0], unbonded_nbrs[:, 1])
+        all_unbonded_vals, (wf_val, coul_val) = vmap(pairwise_unbonded)(ub_i, ub_j)
 
         total_unbonded_val = jnp.where(mask, all_unbonded_vals, 0.0).sum()
         # total_unbonded_val = jnp.sum(all_unbonded_vals)
@@ -215,13 +216,10 @@ class TestEnergyCalculator(unittest.TestCase):
 
     # @unittest.skip("Slow on CPU")
     def test_lammps_ref(self, tol_places=3):
-
-        """
-        data_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/ACTR.dat"
+        """data_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/ACTR.dat"
         log_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/log.lammps"
         traj_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/result.lammpstrj"
         """
-
         """
         data_fpath = "refdata/LAMMPS/20231101_single_chain/K25/K25.dat"
         log_fpath = "refdata/LAMMPS/20231101_single_chain/K25/log.lammps"
@@ -248,7 +246,9 @@ class TestEnergyCalculator(unittest.TestCase):
 
 
         for data_fpath, log_fpath, traj_fpath, tol_places, use_gg in lammps_tests:
-            self.lammps_test(data_fpath, log_fpath, traj_fpath, tol_places, use_gg, show_plot=False)
+            self.lammps_test(
+                data_fpath, log_fpath, traj_fpath, tol_places, use_gg, show_plot=False
+            )
 
 
 
@@ -256,10 +256,14 @@ class TestEnergyCalculator(unittest.TestCase):
     def brute_force(self, pseq, R, bonded_nbrs, unbonded_nbrs, displacement_fn):
         n = pseq.shape[0]
 
-        subterms_fn, energy_fn = get_energy_fn(bonded_nbrs, unbonded_nbrs, displacement_fn)
+        subterms_fn, energy_fn = get_energy_fn(
+            bonded_nbrs, unbonded_nbrs, displacement_fn
+        )
         subterms_fn = jit(subterms_fn)
 
-        residue_combinations = list(itertools.product(*[range(NUM_RESIDUES) for i in range(n)]))
+        residue_combinations = list(
+            itertools.product(*[range(NUM_RESIDUES) for i in range(n)])
+        )
         n_res_combinations = len(residue_combinations)
 
         brute_sm = 0.0
@@ -277,7 +281,8 @@ class TestEnergyCalculator(unittest.TestCase):
             val, _ = subterms_fn(R, pseq_oh)
             brute_sm += val*pr_seq
 
-        calc_energy, (total_bonded_val, total_unbonded_val, wf_val, coul_val) = subterms_fn(R, jnp.array(pseq))
+        calc_energy, aux = subterms_fn(R, jnp.array(pseq))
+        (total_bonded_val, total_unbonded_val, wf_val, coul_val) = aux
 
         return brute_sm, calc_energy
 
@@ -302,7 +307,9 @@ class TestEnergyCalculator(unittest.TestCase):
         bonded_nbrs_set = set([tuple(pr) for pr in onp.array(bonded_nbrs)])
         unbonded_nbrs = jnp.array(list(unbonded_nbrs_set - bonded_nbrs_set))
 
-        brute_val, calc_val = self.brute_force(pseq, R, bonded_nbrs, unbonded_nbrs, displacement_fn)
+        brute_val, calc_val = self.brute_force(
+            pseq, R, bonded_nbrs, unbonded_nbrs, displacement_fn
+        )
 
         print(f"Calc: {calc_val}")
         print(f"Brute Force: {brute_val}")

@@ -1,14 +1,13 @@
-import pdb
 import io
-import pandas as pd
-import numpy as onp
+import pdb
 import random
-from tqdm import tqdm
 
 import jax
 import jax.numpy as jnp
+import numpy as onp
+import pandas as pd
 from jax import tree_util, vmap
-
+from tqdm import tqdm
 
 kb = 0.0019872041
 
@@ -135,13 +134,16 @@ def get_charge_constrained_pseq(n, pos_charge_ratio, neg_charge_ratio, unconstra
     pos_charged_res_idxs = [RES_ALPHA.index(res) for res in constrained_pos_charge_residues]
     neg_charged_res_idxs = [RES_ALPHA.index(res) for res in constrained_neg_charge_residues]
 
-    # unconstrained_residues = list(polar_residues) + list(non_polar_residues)
-    unconstrained_residues = [res for res in RES_ALPHA if (res not in constrained_pos_charge_residues) and (res not in constrained_neg_charge_residues)]
+    unconstrained_residues = []
+    for res in RES_ALPHA:
+        if (res not in constrained_pos_charge_residues) and (res not in constrained_neg_charge_residues):
+            unconstrained_residues.append(res)
     unconstrainted_ratio = 1 - (pos_charge_ratio + neg_charge_ratio)
     n_neg_charge_res = len(constrained_neg_charge_residues)
     n_pos_charge_res = len(constrained_pos_charge_residues)
 
-    neg_charged_value = neg_charge_ratio / n_neg_charge_res * unconstrained_logit * len(unconstrained_residues) / unconstrainted_ratio
+    neg_charged_value = neg_charge_ratio / n_neg_charge_res * unconstrained_logit \
+        * len(unconstrained_residues) / unconstrainted_ratio
     pos_charged_value = pos_charge_ratio / n_pos_charge_res * n_neg_charge_res * neg_charged_value / neg_charge_ratio
 
     nuc = onp.zeros(len(RES_ALPHA))
@@ -186,7 +188,6 @@ def read_data_file(fpath):
     # Read the number of bond types
     num_bond_types_line = lines[4].strip()
     assert('bond types' in num_bond_types_line)
-    num_bond_types = int(num_bond_types_line.split()[0])
 
     # Read the atom type masses
     assert(lines[8].strip() == "Masses")
@@ -271,8 +272,9 @@ def read_traj_file(fpath, n_atoms):
         all_timesteps.append(frame_timestep)
 
         frame_pos_lines = lines[frame_start+9:frame_start+n_lines_per_frame]
-        frame_df = pd.read_csv(io.StringIO('\n'.join(frame_pos_lines)), delim_whitespace=True,
-                               header=None, names=["id", "mol", "type", "q", "xu", "yu", "zu"]
+        frame_df = pd.read_csv(
+            io.StringIO('\n'.join(frame_pos_lines)), delim_whitespace=True,
+            header=None, names=["id", "mol", "type", "q", "xu", "yu", "zu"]
         )
 
         xs = frame_df.xu.to_numpy()
@@ -453,7 +455,7 @@ def dump_pos(traj, filename, box_size, seq=None):
                 else:
                     particle_type = seq[p_idx]
                     assert(particle_type in RES_ALPHA)
-                entry = f'{particle_type} ' + str(position[0]) + ' ' + str(position[1]) + ' ' + str(position[2]) + '\n'
+                entry = f"{particle_type} {position[0]} {position[1]} {position[2]}\n"
                 outfile.write(entry)
 
             outfile.write('eof \n')
@@ -475,7 +477,13 @@ def get_argmax_seq(pseq, scale=False):
     argmax_seq = ''.join([RES_ALPHA[res_idx] for res_idx in max_residues])
 
     if scale:
-        argmax_seq = ''.join([argmax_seq[r_idx].lower() if pseq[r_idx, max_residues[r_idx]] < 0.5 else argmax_seq[r_idx] for r_idx in range(len(argmax_seq))])
+        argmax_seq = []
+        for r_idx in range(len(argmax_seq)):
+            if pseq[r_idx, max_residues[r_idx]] < 0.5:
+                argmax_seq.append(argmax_seq[r_idx].lower())
+            else:
+                argmax_seq.append(argmax_seq[r_idx])
+        argmax_seq = ''.join(argmax_seq)
 
     return argmax_seq
 
@@ -508,7 +516,7 @@ def sample_discrete_seqs(pseq, nsamples, key):
         # Compute the cumulative sum of probabilities for each row
         cumulative_probabilities = jnp.cumsum(pseq, axis=1)
 
-        # Determine the index of the first occurrence where the cumulative probability exceeds the random sample
+        # Determine index where the cumulative probability first exceeds the random sample
         sampled_indices = jnp.sum(cumulative_probabilities < uniform_samples[:, None], axis=1)
 
         return sampled_indices

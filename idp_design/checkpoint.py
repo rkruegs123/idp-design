@@ -2,8 +2,8 @@
 import functools
 
 import jax
-from jax import tree_util, lax
 import jax.numpy as jnp
+from jax import lax
 
 
 def _split_n_stack(x, n):
@@ -12,7 +12,7 @@ def _split_n_stack(x, n):
 
 
 def _flatten_n(x, n):
-    """Flattens the first `n` dimensions of `xs`"""
+    """Flattens the first `n` dimensions of `xs`."""
     return jax.tree_map(lambda y: jnp.reshape(y, (-1,) + y.shape[n:]), x)
 
 

@@ -1,23 +1,28 @@
-import pdb
-import numpy as onp
-import pandas as pd
-import random
 import itertools
 import unittest
-import matplotlib.pyplot as plt
-import seaborn as sns
 from pathlib import Path
 
 import jax
 import jax.numpy as jnp
+import matplotlib.pyplot as plt
+import numpy as onp
 from jax import vmap
 from jax_md import space
 
-from idp_design.utils import RES_ALPHA, NUM_RESIDUES
-from idp_design.utils import read_wf, read_debye, charges
-from idp_design.utils import DEBYE_KAPPA, DEBYE_KAPPA_GG, debye_relative_dielectric
-from idp_design.utils import wang_frenkel, coul, harmonic_spring, spring_r0
 import idp_design.utils as utils
+from idp_design.utils import (
+    DEBYE_KAPPA,
+    DEBYE_KAPPA_GG,
+    RES_ALPHA,
+    charges,
+    coul,
+    debye_relative_dielectric,
+    harmonic_spring,
+    read_debye,
+    read_wf,
+    spring_r0,
+    wang_frenkel,
+)
 
 jax.config.update("jax_enable_x64", True)
 
@@ -135,7 +140,9 @@ class TestEnergyCalculator(unittest.TestCase):
 
         num_frames = len(traj_timesteps)
         all_diffs = list()
-        subterms_fn, energy_fn = get_energy_fn(bonded_nbrs, unbonded_nbrs, displacement_fn, use_gg=use_gg)
+        subterms_fn, energy_fn = get_energy_fn(
+            bonded_nbrs, unbonded_nbrs, displacement_fn, use_gg=use_gg
+        )
         for i in range(num_frames):
             if i == 0:
                 continue
