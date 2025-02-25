@@ -64,6 +64,7 @@ python3 -m experiments.design_rg_salt_sensor --run-name <RUN-NAME> --seq-length 
 By default, salt concentrations are:
   - **Low salt**: 150 mM (`--salt-lo 150`)
   - **High salt**: 450 mM (`--salt-hi 450`)
+
 You can adjust these values using the corresponding flags.
 
 
