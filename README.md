@@ -9,24 +9,22 @@ Additional code is available upon request and will be made public given sufficie
 
 ![Animation](img/pseq_animation.gif)
 
----
 
-## **Installation**
+# **Installation**
 
-### **1. Clone the Repository**
+## **1. Clone the Repository**
 ```sh
 git clone https://github.com/YOUR-USERNAME/idp-design.git
 cd idp-design
 ```
 
-### **2. Install Dependencies**
+## **2. Install Dependencies**
 To install all dependencies in **editable mode**, run:
 ```sh
 pip install -e .
 ```
 This allows you to modify the code and have changes reflected immediately without reinstalling.
 
----
 
 ## **Testing**
 To ensure everything is working correctly, run:
@@ -35,9 +33,8 @@ pytest
 ```
 This will execute all tests inside the `tests/` directory.
 
----
 
-## **Usage**
+# **Usage**
 
 All design scripts save results in a specified directory within the `output` folder.
 **Before running any designs, create an output directory:**
@@ -45,7 +42,7 @@ All design scripts save results in a specified directory within the `output` fol
 mkdir output
 ```
 
-### **Design an IDP with a Target Rg**
+## **Design an IDP with a Target Rg**
 To design an IDP that **optimizes its radius of gyration (Rg)**:
 ```sh
 python3 -m experiments.design_rg --run-name <RUN-NAME> --seq-length <LENGTH> --target-rg <TARGET-VALUE>
@@ -54,9 +51,8 @@ python3 -m experiments.design_rg --run-name <RUN-NAME> --seq-length <LENGTH> --t
 - `LENGTH`: The length of the IDP.
 - **Results will be stored in** `output/RUN-NAME`.
 
----
 
-### **Design an IDP as a Salt Sensor**
+## **Design an IDP as a Salt Sensor**
 To design an IDP that **expands or contracts based on salt concentration**, run:
 ```sh
 python3 -m experiments.design_rg_salt_sensor --run-name <RUN-NAME> --seq-length <LENGTH> --salt-lo 150 --salt-hi 450 --mode MODE
@@ -65,17 +61,15 @@ python3 -m experiments.design_rg_salt_sensor --run-name <RUN-NAME> --seq-length 
 - `LENGTH`: The length of the IDP.
 - **Results will be stored in** `output/RUN-NAME`.
 
-🔹 **By default**, salt concentrations are:
+By default, salt concentrations are:
   - **Low salt**: 150 mM (`--salt-lo 150`)
   - **High salt**: 450 mM (`--salt-hi 450`)
-  You can adjust these values using the corresponding flags.
+You can adjust these values using the corresponding flags.
 
----
 
 ## **Contributing**
 If you have suggestions, feel free to **open an issue** or **submit a pull request**.
 
----
 
 # Citation
 
