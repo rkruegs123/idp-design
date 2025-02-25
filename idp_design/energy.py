@@ -1,11 +1,6 @@
-import itertools
-import unittest
-from pathlib import Path
 
 import jax
 import jax.numpy as jnp
-import matplotlib.pyplot as plt
-import numpy as onp
 from jax import vmap
 from jax_md import space
 
@@ -13,7 +8,6 @@ import idp_design.utils as utils
 from idp_design.utils import (
     DEBYE_KAPPA,
     DEBYE_KAPPA_GG,
-    RES_ALPHA,
     charges,
     coul,
     debye_relative_dielectric,

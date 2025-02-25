@@ -1,17 +1,11 @@
-import itertools
-import unittest
-from pathlib import Path
 
 import jax
 import jax.numpy as jnp
-import matplotlib.pyplot as plt
-import numpy as onp
-from jax import jit, vmap
+from jax import vmap
 from jax_md import space
-from tqdm import tqdm
 
 import idp_design.utils as utils
-from idp_design.utils import NUM_RESIDUES, RES_ALPHA
+from idp_design.utils import NUM_RESIDUES
 
 jax.config.update("jax_enable_x64", True)
 
