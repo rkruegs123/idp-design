@@ -5,18 +5,6 @@ from jax import vmap
 from jax_md import space
 
 import idp_design.utils as utils
-from idp_design.utils import (
-    DEBYE_KAPPA,
-    DEBYE_KAPPA_GG,
-    charges,
-    coul,
-    debye_relative_dielectric,
-    harmonic_spring,
-    read_debye,
-    read_wf,
-    spring_r0,
-    wang_frenkel,
-)
 
 jax.config.update("jax_enable_x64", True)
 
@@ -24,16 +12,16 @@ jax.config.update("jax_enable_x64", True)
 def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
 
     if use_gg:
-        debye_kappa = DEBYE_KAPPA_GG
+        debye_kappa = utils.DEBYE_KAPPA_GG
         debye_path = utils.DEBYE_GG_PATH
         wf_path = utils.WF_GG_PATH
     else:
-        debye_kappa = DEBYE_KAPPA
+        debye_kappa = utils.DEBYE_KAPPA
         debye_path = utils.DEBYE_PATH
         wf_path = utils.WF_PATH
 
-    eps_table, sigma_table, nu_table, mu_table, rc_table = read_wf(fpath=wf_path)
-    cutoff_table = read_debye(fpath=debye_path)
+    eps_table, sigma_table, nu_table, mu_table, rc_table = utils._read_wf(fpath=wf_path)
+    cutoff_table = utils._read_debye(fpath=debye_path)
 
     # spring_k = 8.03 * 10 / 4.184 # FIXME: double check
     spring_k = 9.6 * 2
@@ -49,14 +37,19 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
             ires = seq[i]
             jres = seq[j]
 
-            wf_val = wang_frenkel(
-                r, r_c=rc_table[ires, jres], sigma=sigma_table[ires, jres],
-                nu=nu_table[ires, jres], mu=mu_table[ires, jres],
+            wf_val = utils._wang_frenkel(
+                r,
+                r_c=rc_table[ires, jres],
+                sigma=sigma_table[ires, jres],
+                nu=nu_table[ires, jres],
+                mu=mu_table[ires, jres],
                 eps=eps_table[ires, jres]
             )
-            coul_val = coul(
-                r, qij=jnp.array([charges[ires], charges[jres]]),
-                eps=debye_relative_dielectric, k=debye_kappa,
+            coul_val = utils._coul(
+                r,
+                qij=jnp.array([utils.charges[ires], utils.charges[jres]]),
+                eps=utils.debye_relative_dielectric,
+                k=debye_kappa,
                 r_c=cutoff_table[ires, jres]
             )
 
@@ -70,7 +63,7 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
 
             r = space.distance(displacement_fn(ipos, jpos))
 
-            return harmonic_spring(r, r0=spring_r0, k=spring_k)
+            return utils._harmonic_spring(r, r0=utils.spring_r0, k=spring_k)
 
         bnd_i = bonded_nbrs[:, 0]
         bnd_j = bonded_nbrs[:, 1]

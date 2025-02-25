@@ -1,6 +1,4 @@
 import io
-import pdb
-import random
 
 import jax
 import jax.numpy as jnp
@@ -88,21 +86,91 @@ masses = jnp.array([
     113.199997
 ])
 
-def get_seq_mass(seq):
-    return onp.array([masses[RES_ALPHA.index(res)] for res in seq])
 
 def get_pseq_mass(pseq, res_masses=masses):
+    """Computes the expected molecular mass of a probabilistic sequence.
+
+    Given a probability matrix `pseq` of shape `(n, 20)`, where each row represents
+    a probability distribution over the 20 amino acids (ordered by `RES_ALPHA`),
+    this function calculates the expected residue mass at each position by
+    computing the dot product between `pseq` and `res_masses`.
+
+    Args:
+        pseq (jnp.ndarray): A `(n, 20)` JAX array where each row represents a
+            probability distribution over amino acids.
+        res_masses (jnp.ndarray, optional): A `(20,)` JAX array containing the
+            molecular masses of amino acids in the `RES_ALPHA` order. Defaults
+            to `masses`.
+
+    Returns:
+        jnp.ndarray: A `(n,)` JAX array where each element is the expected molecular
+        mass at the corresponding position in `pseq`.
+
+    Example:
+        >>> pseq = jnp.array([
+        ...     [0.5, 0.5] + [0.0] * 18,  # 50% 'M' (131.2) and 50% 'G' (57.0)
+        ...     [0.0, 1.0] + [0.0] * 18   # 100% 'G' (57.0)
+        ... ])
+        >>> get_pseq_mass(pseq)
+        Array([94.125,  57.05], dtype=float32)
+    """
     return vmap(jnp.dot, (0, None))(pseq, res_masses)
 
 
 def recenter(R, box_size):
+    """Recenters a set of 3D positions within a cubic simulation box.
+
+    This function shifts the input coordinates `R` such that their average position
+    aligns with the center of a cubic box of given `box_size`. The displacement is
+    computed using the unweighted mean of all positions in `R`.
+
+    Args:
+        R (jnp.ndarray): A `(n, 3)` JAX array representing `n` positions in 3D space.
+        box_size (float): The size of the cubic box along each axis.
+
+    Returns:
+        jnp.ndarray: A `(n, 3)` JAX array of recentered positions, where the
+        unweighted average position is aligned with the box center.
+
+    Example:
+        >>> R = jnp.array([
+        ...     [1.0, 2.0, 3.0],
+        ...     [4.0, 5.0, 6.0]
+        ... ])
+        >>> recenter(R, box_size=10.0)
+        Array([[-3.5, -3.5, -3.5],
+               [6.5, 6.5, 6.5]], dtype=float32)
+    """
     body_avg_pos = jnp.mean(R, axis=0)
     box_center = jnp.array([box_size / 2, box_size / 2, box_size / 2])
     disp = body_avg_pos - box_center
     center_adjusted = R - disp
     return center_adjusted
 
+
 def seq_to_one_hot(seq):
+    """Converts a discrete amino acid sequence into a one-hot encoded representation.
+
+    Each amino acid in the input sequence is mapped to a one-hot vector of length 20,
+    corresponding to its index in `RES_ALPHA`.
+
+    The output is an `(n, 20)` NumPy array where `n` is the sequence length, and each
+    row represents a one-hot encoded probability distribution.
+
+    Args:
+        seq (list of str): A list of amino acid characters representing the sequence.
+
+    Returns:
+        numpy.ndarray: A `(n, 20)` array where each row is a one-hot encoded representation
+        of the corresponding amino acid in `seq`, following the `RES_ALPHA` ordering.
+
+    Example:
+        >>> seq = ["M", "G", "K"]
+        >>> seq_to_one_hot(seq)
+        array([[1., 0., 0., ..., 0.],  # 'M' -> one-hot
+               [0., 1., 0., ..., 0.],  # 'G' -> one-hot
+               [0., 0., 1., ..., 0.]]) # 'K' -> one-hot
+    """
     all_vecs = list()
     for res in seq:
         res_idx = RES_ALPHA.index(res)
@@ -112,17 +180,7 @@ def seq_to_one_hot(seq):
     return onp.array(all_vecs)
 
 
-def get_rand_seq(n):
-    seq = ''.join([random.choice(RES_ALPHA) for _ in range(n)])
-    return seq
 
-
-def random_pseq(n):
-    p_seq = onp.empty((n, NUM_RESIDUES), dtype=onp.float64)
-    for i in range(n):
-        p_seq[i] = onp.random.random_sample(NUM_RESIDUES)
-        p_seq[i] /= onp.sum(p_seq[i])
-    return p_seq
 
 def get_charge_constrained_pseq(
     n, pos_charge_ratio, neg_charge_ratio, unconstrained_logit=10.0,
@@ -168,7 +226,7 @@ def normalize_logits(logits):
 
 
 def read_data_file(fpath):
-
+    """Reads metadata from LAMMPS data file."""
     with open(fpath) as f:
         lines = [line for line in f.readlines() if line.strip()]
 
@@ -236,7 +294,7 @@ def read_data_file(fpath):
     return all_bonds, seq, atom_type_masses, num_atoms
 
 def read_log_file(fpath):
-
+    """Reads metadata from LAMMPS log file."""
     with open(fpath) as f:
         lines = [line for line in f.readlines() if line.strip()]
 
@@ -257,6 +315,7 @@ def read_log_file(fpath):
     return log_df
 
 def read_traj_file(fpath, n_atoms):
+    """Reads metadata from LAMMPS trajectory file."""
     with open(fpath) as f:
         lines = [line for line in f.readlines() if line.strip()]
 
@@ -291,7 +350,7 @@ def read_traj_file(fpath, n_atoms):
 
 WF_GG_PATH = "params/wf_gg.txt"
 WF_PATH = "params/wf.txt"
-def read_wf(fpath=WF_GG_PATH):
+def _read_wf(fpath=WF_GG_PATH):
     wf_df = pd.read_csv(
         fpath, sep=r'\s+', header=None,
         names=["res1", "res2", "eps", "sigma", "nu", "mu", "rc"]
@@ -334,7 +393,7 @@ def read_wf(fpath=WF_GG_PATH):
 
 DEBYE_GG_PATH = "params/debye_gg.txt"
 DEBYE_PATH = "params/debye.txt"
-def read_debye(default_cutoff=0.0, fpath=DEBYE_GG_PATH):
+def _read_debye(default_cutoff=0.0, fpath=DEBYE_GG_PATH):
     debye_df = pd.read_csv(
         fpath, sep=r'\s+', header=None,
         names=["res1", "res2", "cutoff"]
@@ -371,7 +430,7 @@ debye_relative_dielectric = 80.0
 
 spring_r0 = 3.81
 
-def wang_frenkel(r, r_c, sigma, nu, mu, eps):
+def _wang_frenkel(r, r_c, sigma, nu, mu, eps):
     # r_min = r_c*((1+2*nu) / (1 + 2*nu*(r_c/sigma)**(2*nu)))**(1/(2*nu))
 
     alpha = 2*nu * (r_c/sigma)**(2*mu)
@@ -382,7 +441,7 @@ def wang_frenkel(r, r_c, sigma, nu, mu, eps):
     return jnp.where(r < r_c, val, 0.0)
 
 
-def coul(r, qij, eps, k, r_c):
+def _coul(r, qij, eps, k, r_c):
     qi = qij[0]
     qj = qij[1]
 
@@ -392,11 +451,37 @@ def coul(r, qij, eps, k, r_c):
     val *= 6.022e23
     return jnp.where(r < r_c, val, 0.0)
 
-def harmonic_spring(r, r0, k):
+def _harmonic_spring(r, r0, k):
     return 1/2 * k * (r-r0)**2
 
 
 def tree_stack(trees):
+    """Stacks multiple PyTree structures element-wise along a new axis.
+
+    This function takes a list of PyTree structures (e.g., nested dictionaries,
+    lists, or tuples of JAX arrays) and stacks corresponding elements across
+    all trees using `jnp.stack()`. The result maintains the same PyTree structure,
+    but each leaf node is now a stacked JAX array.
+
+    Args:
+        trees (list of PyTree): A list of PyTree structures, where each leaf
+            node contains a JAX array of the same shape.
+
+    Returns:
+        PyTree: A PyTree structure with the same shape as the input, where each
+        leaf node is a JAX array stacked along a new axis.
+
+    Example:
+        >>> from jax import tree_util
+        >>> import jax.numpy as jnp
+        >>> tree1 = {"a": jnp.array([1, 2]), "b": jnp.array([3, 4])}
+        >>> tree2 = {"a": jnp.array([5, 6]), "b": jnp.array([7, 8])}
+        >>> tree_stack([tree1, tree2])
+        {'a': Array([[1, 2],
+                     [5, 6]], dtype=int32),
+         'b': Array([[3, 4],
+                     [7, 8]], dtype=int32)}
+    """
     return tree_util.tree_map(lambda *v: jnp.stack(v), *trees)
 
 
@@ -480,19 +565,48 @@ def compute_weights(ref_energies, new_energies, beta):
 
 
 def get_argmax_seq(pseq, scale=False):
+    """Converts a probabilistic sequence into a deterministic sequence using argmax.
+
+    Given a probability matrix `pseq` of shape `(n, 20)`, where each row represents
+    a probability distribution over the 20 amino acids (ordered by `RES_ALPHA`),
+    this function selects the most probable amino acid at each position using `argmax`.
+
+    If `scale=True`, residues with probabilities below 0.5 are converted to lowercase
+    to indicate uncertainty in the selection.
+
+    Args:
+        pseq (jnp.ndarray): A `(n, 20)` JAX array where each row represents a
+            probability distribution over amino acids.
+        scale (bool, optional): If `True`, amino acids with probabilities below 0.5
+            are returned in lowercase. Defaults to `False`.
+
+    Returns:
+        str: A deterministic amino acid sequence derived from `pseq`, with lowercase
+        letters marking uncertain assignments if `scale=True`.
+
+    Example:
+        >>> pseq = jnp.array([
+        ...     [0.9, 0.1] + [0.0] * 18,  # 'M' (high confidence)
+        ...     [0.4, 0.6] + [0.0] * 18   # 'G' (low confidence, if scaled)
+        ... ])
+        >>> get_argmax_seq(pseq)
+        'MG'
+    """
     max_residues = jnp.argmax(pseq, axis=1)
     argmax_seq = ''.join([RES_ALPHA[res_idx] for res_idx in max_residues])
 
     if scale:
         argmax_seq = []
-        for r_idx in range(len(argmax_seq)):
+        for r_idx in range(len(max_residues)):
             if pseq[r_idx, max_residues[r_idx]] < 0.5:
-                argmax_seq.append(argmax_seq[r_idx].lower())
+                argmax_seq.append(RES_ALPHA[max_residues[r_idx]].lower())
             else:
-                argmax_seq.append(argmax_seq[r_idx])
+                argmax_seq.append(RES_ALPHA[max_residues[r_idx]])
         argmax_seq = ''.join(argmax_seq)
 
     return argmax_seq
+
+
 
 def aa_seq_to_type_seq(aa_seq):
     type_seq = ""
@@ -512,18 +626,50 @@ def aa_seq_to_type_seq(aa_seq):
 
 
 def sample_discrete_seqs(pseq, nsamples, key):
+    """Samples discrete sequences from a probabilistic sequence representation.
+
+    Given a probability matrix `pseq` of shape `(n, 20)`, where each row represents
+    a probability distribution over the 20 amino acids (ordered by `RES_ALPHA`),
+    this function generates `nsamples` discrete sequences. Sampling is performed
+    using categorical distributions derived from `pseq`.
+
+    Args:
+        pseq (jnp.ndarray): A `(n, 20)` JAX array where each row represents a
+            probability distribution over amino acids.
+        nsamples (int): The number of discrete sequences to sample.
+        key (jax.random.PRNGKey): A JAX random key for reproducibility.
+
+    Returns:
+        tuple:
+            - list of str: A list of `nsamples` sampled amino acid sequences.
+            - numpy.ndarray: A `(n, 20)` matrix of normalized empirical amino
+              acid frequencies from the sampled sequences.
+
+    Example:
+        >>> pseq = jnp.array([
+        ...     [0.7, 0.2, 0.1] + [0.0] * 17,  # Mostly 'M'
+        ...     [0.1, 0.1, 0.8] + [0.0] * 17   # Mostly 'K'
+        ... ])
+        >>> key = jax.random.PRNGKey(42) # exact behavior depends on JAX version
+        >>> seqs, freqs = sample_discrete_seqs(pseq, nsamples=1000, key=key)
+        >>> seqs[:3]  # Example sampled sequences
+        ['MK', 'MK', 'MM']
+        >>> freqs  # Should approximate pseq
+        array([[0.7, 0.2, 0.1, ..., 0.0],
+               [0.1, 0.1, 0.8, ..., 0.0]])
+    """
     n = pseq.shape[0]
 
     def sample_indices(sample_key):
         # Generate a random number for each row
         uniform_samples = jax.random.uniform(
-            sample_key, shape=(pseq.shape[0],),
-            minval=0, maxval=1)
+            sample_key, shape=(pseq.shape[0],), minval=0, maxval=1
+        )
 
         # Compute the cumulative sum of probabilities for each row
         cumulative_probabilities = jnp.cumsum(pseq, axis=1)
 
-        # Determine index where the cumulative probability first exceeds the random sample
+        # Determine index where the cumulative probability first exceeds the sample
         sampled_indices = jnp.sum(
             cumulative_probabilities < uniform_samples[:, None], axis=1
         )
@@ -547,6 +693,7 @@ def sample_discrete_seqs(pseq, nsamples, key):
 
 
 
+
 def get_kappa(salt_conc, use_gg=True):
     """Computes the inverse Debye screening length from a salt concentration in mM."""
     if use_gg:
@@ -555,21 +702,3 @@ def get_kappa(salt_conc, use_gg=True):
         default_kappa = DEBYE_KAPPA
 
     return default_kappa * (onp.sqrt(salt_conc / 1000) / onp.sqrt(150 / 1000))
-
-
-if __name__ == "__main__":
-
-    pseq = get_charge_constrained_pseq(10, 0.45, 0.35)
-
-    pdb.set_trace()
-
-    data_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/ACTR.dat"
-    all_bonds, seq, atom_type_masses, num_atoms = read_data_file(data_fpath)
-
-    log_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/log.lammps"
-    log_df = read_log_file(log_fpath)
-
-    traj_fpath = "refdata/LAMMPS/20231101_single_chain/ACTR/result.lammpstrj"
-    traj_positions, traj_timesteps = read_traj_file(traj_fpath, num_atoms)
-
-    pdb.set_trace()

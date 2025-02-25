@@ -5,13 +5,12 @@ from jax import vmap
 from jax_md import space
 
 import idp_design.utils as utils
-from idp_design.utils import NUM_RESIDUES
 
 jax.config.update("jax_enable_x64", True)
 
 
-mapped_wang_frenkel = vmap(utils.wang_frenkel, in_axes=(None, 0, 0, 0, 0 ,0))
-mapped_coul = vmap(utils.coul, in_axes=(None, 0, None, None, 0))
+mapped_wang_frenkel = vmap(utils._wang_frenkel, in_axes=(None, 0, 0, 0, 0 ,0))
+mapped_coul = vmap(utils._coul, in_axes=(None, 0, None, None, 0))
 
 def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
 
@@ -24,8 +23,8 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
         debye_path = utils.DEBYE_PATH
         wf_path = utils.WF_PATH
 
-    eps_table, sigma_table, nu_table, mu_table, rc_table = utils.read_wf(fpath=wf_path)
-    debye_rc_table = utils.read_debye(fpath=debye_path)
+    eps_table, sigma_table, nu_table, mu_table, rc_table = utils._read_wf(fpath=wf_path)
+    debye_rc_table = utils._read_debye(fpath=debye_path)
 
     # spring_k = 8.03 * 10 / 4.184 # FIXME: double check
     spring_k = 9.6 * 2
@@ -39,8 +38,8 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
     rc_flattened = list()
     debye_rc_flattened = list()
     pair_charges = list()
-    for i in range(NUM_RESIDUES):
-        for j in range(NUM_RESIDUES):
+    for i in range(utils.NUM_RESIDUES):
+        for j in range(utils.NUM_RESIDUES):
             eps_flattened.append(eps_table[i][j])
             sigma_flattened.append(sigma_table[i][j])
             nu_flattened.append(nu_table[i][j])
@@ -84,12 +83,15 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
             wf_vals = mapped_wang_frenkel(
                 r, rc_flattened, sigma_flattened,
                 nu_flattened, mu_flattened,
-                eps_flattened)
+                eps_flattened
+            )
             wf_val = jnp.dot(all_probs, wf_vals)
 
-            coul_vals = mapped_coul(r, pair_charges,
-                                    utils.debye_relative_dielectric, debye_kappa,
-                                    debye_rc_flattened)
+            coul_vals = mapped_coul(
+                r, pair_charges,
+                utils.debye_relative_dielectric, debye_kappa,
+                debye_rc_flattened
+            )
             coul_val = jnp.dot(all_probs, coul_vals)
 
             val = wf_val + coul_val
@@ -101,7 +103,7 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
 
             r = space.distance(displacement_fn(ipos, jpos))
 
-            return utils.harmonic_spring(r, r0=utils.spring_r0, k=spring_k)
+            return utils._harmonic_spring(r, r0=utils.spring_r0, k=spring_k)
 
         bnd_i = bonded_nbrs[:, 0]
         bnd_j = bonded_nbrs[:, 1]

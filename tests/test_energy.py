@@ -3,19 +3,23 @@ import jax.numpy as jnp
 import itertools
 from pathlib import Path
 import numpy as onp
+import random
 
 from jax_md import space
 
 from idp_design import energy, utils
 
 
+def get_rand_seq(n):
+    seq = ''.join([random.choice(utils.RES_ALPHA) for _ in range(n)])
+    return seq
 
 def test_no_warnings():
     displacement_fn, shift_fn = space.free()
     n = 5
     R = jnp.array([[0.0, 0.0, utils.spring_r0 * i] for i in range(n)])
 
-    seq = utils.get_rand_seq(n)
+    seq = get_rand_seq(n)
     seq_idx = jnp.array([utils.RES_ALPHA.index(res) for res in seq])
 
     bonded_nbrs = jnp.array([(i, i+1) for i in range(n-1)])

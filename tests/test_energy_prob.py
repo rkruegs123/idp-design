@@ -11,6 +11,12 @@ from jax_md import space
 from idp_design import energy_prob, utils
 
 
+def random_pseq(n):
+    p_seq = onp.empty((n, utils.NUM_RESIDUES), dtype=onp.float64)
+    for i in range(n):
+        p_seq[i] = onp.random.random_sample(utils.NUM_RESIDUES)
+        p_seq[i] /= onp.sum(p_seq[i])
+    return p_seq
 
 
 def brute_force(pseq, R, bonded_nbrs, unbonded_nbrs, displacement_fn):
@@ -149,7 +155,7 @@ def test_fuzzy_seq():
     for i in range(n):
         R.append([0.0, 0.0, utils.spring_r0*i])
     R = jnp.array(R)
-    pseq = utils.random_pseq(n)
+    pseq = random_pseq(n)
     displacement_fn, _ = space.free()
 
     bonded_nbrs = jnp.array([(i, i+1) for i in range(n-1)])

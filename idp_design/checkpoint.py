@@ -17,7 +17,7 @@ def _flatten_n(x, n):
 
 
 def checkpoint_scan(f, init, xs, checkpoint_every):
-    """Replicates `lax.scan` but checkpoints gradients every `checkpoint_every` steps."""
+    """Replicates `lax.scan` but checkpoints grads every `checkpoint_every` steps."""
     flat_xs, _ = jax.tree_util.tree_flatten(xs)
     length = flat_xs[0].shape[0]
     outer_iterations, residual = divmod(length, checkpoint_every)
