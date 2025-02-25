@@ -54,13 +54,43 @@ all_types = [("non polar", non_polar_residues), ("polar", polar_residues),
              ("+ charge", pos_charge_residues), ("- charge", neg_charge_residues)]
 
 
+
 def nuc_to_type_distribution(nuc):
+    """Computes the distribution of residue types in a probabilistic sequence.
+
+    Given a probability distribution over amino acids (`nuc`), this function
+    calculates the expected proportion of residues belonging to four
+    physicochemical categories:
+    - **Non-polar**: {G, A, V, C, P, L, I, M, W, F}
+    - **Polar**: {S, T, Y, N, Q}
+    - **Positively charged**: {K, R, H}
+    - **Negatively charged**: {D, E}
+
+    The function computes these proportions using dot products between the
+    probability distribution `nuc` and precomputed binary mappers for each
+    residue type.
+
+    Args:
+        nuc (jnp.ndarray): A `(20,)` JAX array representing a probability
+            distribution over amino acids, following the `RES_ALPHA` ordering.
+
+    Returns:
+        jnp.ndarray: A `(4,)` JAX array containing the expected fraction of
+        residues in each category: `[non-polar, polar, positively charged,
+        negatively charged]`.
+
+    Example:
+        >>> nuc = jnp.array([0.05] * 20)  # Uniform distribution over all amino acids
+        >>> nuc_to_type_distribution(nuc)
+        Array([0.50, 0.25, 0.15, 0.10], dtype=float32)  # Example proportions
+    """
     non_polar_ratio = jnp.dot(nuc, non_polar_mapper)
     polar_ratio = jnp.dot(nuc, polar_mapper)
     pos_charge_ratio = jnp.dot(nuc, pos_charge_mapper)
     neg_charge_ratio = jnp.dot(nuc, neg_charge_mapper)
     return jnp.array([non_polar_ratio, polar_ratio, pos_charge_ratio, neg_charge_ratio])
 pseq_to_type_distribution = vmap(nuc_to_type_distribution)
+
 
 
 masses = jnp.array([
@@ -161,7 +191,7 @@ def seq_to_one_hot(seq):
         seq (list of str): A list of amino acid characters representing the sequence.
 
     Returns:
-        numpy.ndarray: A `(n, 20)` array where each row is a one-hot encoded representation
+        numpy.ndarray: A `(n, 20)` array where each row is one-hot encoded
         of the corresponding amino acid in `seq`, following the `RES_ALPHA` ordering.
 
     Example:
@@ -180,49 +210,6 @@ def seq_to_one_hot(seq):
     return onp.array(all_vecs)
 
 
-
-
-def get_charge_constrained_pseq(
-    n, pos_charge_ratio, neg_charge_ratio, unconstrained_logit=10.0,
-    constrained_pos_charge_residues=pos_charge_residues,
-    constrained_neg_charge_residues=neg_charge_residues
-):
-    assert(pos_charge_ratio > 0.0 and pos_charge_ratio <= 1.0)
-    assert(neg_charge_ratio > 0.0 and neg_charge_ratio <= 1.0)
-    assert(pos_charge_ratio + neg_charge_ratio < 1.0) # to avoid division by 0
-
-    pos_charged_res_idxs = [RES_ALPHA.index(res) for res in constrained_pos_charge_residues]
-    neg_charged_res_idxs = [RES_ALPHA.index(res) for res in constrained_neg_charge_residues]
-
-    unconstrained_residues = []
-    for res in RES_ALPHA:
-        if (res not in constrained_pos_charge_residues) and (res not in constrained_neg_charge_residues):
-            unconstrained_residues.append(res)
-    unconstrainted_ratio = 1 - (pos_charge_ratio + neg_charge_ratio)
-    n_neg_charge_res = len(constrained_neg_charge_residues)
-    n_pos_charge_res = len(constrained_pos_charge_residues)
-
-    neg_charged_value = neg_charge_ratio / n_neg_charge_res * unconstrained_logit \
-        * len(unconstrained_residues) / unconstrainted_ratio
-    pos_charged_value = pos_charge_ratio / n_pos_charge_res * n_neg_charge_res * neg_charged_value / neg_charge_ratio
-
-    nuc = onp.zeros(len(RES_ALPHA))
-
-    unconstrained_res_idxs = [RES_ALPHA.index(res) for res in unconstrained_residues]
-    nuc[unconstrained_res_idxs] = unconstrained_logit
-    nuc[pos_charged_res_idxs] = pos_charged_value
-    nuc[neg_charged_res_idxs] = neg_charged_value
-    nuc_normalized = nuc / nuc.sum()
-
-    pseq = onp.vstack([nuc_normalized]*n)
-    logits = onp.vstack([nuc]*n)
-
-    return pseq, logits
-
-
-# note that this is an alternative to softmaxxing
-def normalize_logits(logits):
-    return logits / logits.sum(axis=1)[:, jnp.newaxis]
 
 
 def read_data_file(fpath):
@@ -524,6 +511,33 @@ for res in RES_ALPHA:
 
 
 def dump_pos(traj, filename, box_size, seq=None):
+    """Exports a trajectory to a `.pos` file for visualization in INJAVIS.
+
+    This function writes a trajectory to a `.pos` file, a format compatible
+    with the INJAVIS visualization software. The trajectory consists of
+    `n_states` frames, each defining particle positions inside a cubic box.
+    Optionally, amino acid sequence information (`seq`) can be included,
+    assigning distinct colors to different residue types.
+
+    The generated `.pos` file can be viewed using:
+        java -Xmx4096m -jar injavis.jar <filename>
+
+    Args:
+        traj (list of jnp.ndarray): A list of `(n, 3)` JAX arrays, where each
+            array represents a frame of `n` particle positions in 3D space.
+        filename (str): The output filename for the `.pos` file.
+        box_size (float): The size of the cubic simulation box.
+        seq (str, optional): A sequence of amino acids (matching `RES_ALPHA`),
+            used to assign particle types for color mapping. If `None`, a
+            default representation is used.
+
+    Returns:
+        None: The function writes the trajectory data to `filename`.
+
+    Example:
+        >>> traj = [jnp.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])]
+        >>> dump_pos(traj, "output.pos", box_size=10.0, seq="MG")
+    """
     n_states = len(traj)
     if seq is None:
         particle_type_str = 'def R "sphere 3.81 75a2f7" \n'
@@ -539,21 +553,20 @@ def dump_pos(traj, filename, box_size, seq=None):
         pos -= jnp.array([box_size/2, box_size/2, box_size/2])
         with open(filename, 'a') as outfile:
             outfile.write(box_def)
-            # outfile.write(f'def R "sphere 3.81 {color}" \n')
             outfile.write(particle_type_str)
             for p_idx, position in enumerate(pos):
                 if seq is None:
                     particle_type = "R"
                 else:
                     particle_type = seq[p_idx]
-                    assert(particle_type in RES_ALPHA)
+                    assert particle_type in RES_ALPHA
                 entry = f"{particle_type} {position[0]} {position[1]} {position[2]}\n"
                 outfile.write(entry)
-
             outfile.write('eof \n')
 
 
 def compute_weights(ref_energies, new_energies, beta):
+    """Compute DiffTRE weights given calculated and reference energies."""
     diffs = new_energies - ref_energies # element-wise subtraction
     boltzs = jnp.exp(-beta * diffs)
     denom = jnp.sum(boltzs)
@@ -605,23 +618,6 @@ def get_argmax_seq(pseq, scale=False):
         argmax_seq = ''.join(argmax_seq)
 
     return argmax_seq
-
-
-
-def aa_seq_to_type_seq(aa_seq):
-    type_seq = ""
-    for res in aa_seq:
-        if res in non_polar_residues:
-            type_seq += "N"
-        elif res in polar_residues:
-            type_seq += "P"
-        elif res in pos_charge_residues:
-            type_seq += "+"
-        elif res in neg_charge_residues:
-            type_seq += "-"
-        else:
-            raise RuntimeError(f"Invalid residuee: {res}")
-    return type_seq
 
 
 

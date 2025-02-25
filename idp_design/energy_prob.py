@@ -116,7 +116,8 @@ def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True)
 
         total_energy = total_bonded_val + total_unbonded_val
 
-        return total_energy, (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val)
+        aux = (total_bonded_val, total_unbonded_val, total_wf_val, total_coul_val)
+        return total_energy, aux
 
     def energy_fn(
         R,
