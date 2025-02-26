@@ -10,7 +10,7 @@ Additional code is available upon request and will be made public given sufficie
 ![Animation](img/pseq_animation.gif)
 
 
-# **Basic Installation**
+# **Installation**
 
 ## **0. Create a New Environment**
 
@@ -145,6 +145,18 @@ residue.
 ## **Contributing**
 If you have suggestions, feel free to **open an issue** or **submit a pull request**.
 To maintain code quality standards, please ensure that any contributed code passes linting checks via `ruff check idp_design/`.
+
+
+## **Reproducing Figures**
+
+We provide plotting code for main figures in `figures/plot_figures.ipynb`.
+This notebook has several additional dependencies, installable via:
+```sh
+pip install seaborn
+pip install logomaker
+conda install jupyter
+```
+
 
 
 # Citation
