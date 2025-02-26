@@ -716,3 +716,85 @@ def get_rand_seq(n: int) -> str:
     """
     seq = ''.join([random.choice(RES_ALPHA) for _ in range(n)])
     return seq
+
+
+
+
+def get_charge_constrained_pseq(
+    n: int,
+    pos_charge_ratio: float,
+    neg_charge_ratio: float,
+    unconstrained_logit: float = 10.0,
+    constrained_pos_charge_residues: set = pos_charge_residues,
+    constrained_neg_charge_residues: set = neg_charge_residues
+) -> tuple[jnp.ndarray, jnp.ndarray]:
+    """Generates a probabilistic sequence (pseq) constrained by charge composition.
+
+    This function constructs a sequence where at least a given fraction of residues
+    are **positively** and **negatively** charged, ensuring that the remaining residues
+    are distributed among the unconstrained amino acids. The returned probabilistic
+    sequence (`pseq`) maintains these charge constraints.
+
+    The function normalizes the probabilities so that the specified fraction of
+    positively and negatively charged residues is maintained while the unconstrained
+    residues are distributed according to `unconstrained_logit`.
+
+    :param n: The sequence length.
+    :type n: int
+    :param pos_charge_ratio: Minimum fraction of pos. charged residues in the sequence.
+    :type pos_charge_ratio: float
+    :param neg_charge_ratio: Minimum fraction of neg. charged residues in the sequence.
+    :type neg_charge_ratio: float
+    :param unconstrained_logit: Weighting factor for unconstrained residues.
+    :type unconstrained_logit: float
+    :param constrained_pos_charge_residues: Set of pos. charged residues.
+    :type constrained_pos_charge_residues: set
+    :param constrained_neg_charge_residues: Set of neg. charged residues.
+    :type constrained_neg_charge_residues: set
+
+    :returns:
+        - **pseq** (*jnp.ndarray*): A `(n, 20)` probabilistic sequence constrained by
+                                    charge ratios.
+        - **logits** (*jnp.ndarray*): The raw logits used to generate `pseq`.
+
+    :raises AssertionError: If `pos_charge_ratio` or `neg_charge_ratio` are not
+                            within `(0,1]` or if their sum exceeds `1.0`.
+    """
+    assert(pos_charge_ratio > 0.0 and pos_charge_ratio <= 1.0)
+    assert(neg_charge_ratio > 0.0 and neg_charge_ratio <= 1.0)
+    assert(pos_charge_ratio + neg_charge_ratio < 1.0) # to avoid division by 0
+
+    pos_charged_res_idxs = [
+        RES_ALPHA.index(res) for res in constrained_pos_charge_residues
+    ]
+    neg_charged_res_idxs = [
+        RES_ALPHA.index(res) for res in constrained_neg_charge_residues
+    ]
+
+    unconstrained_residues = list()
+    for res in RES_ALPHA:
+        cond = (res not in constrained_pos_charge_residues) \
+            and (res not in constrained_neg_charge_residues)
+        if cond:
+            unconstrained_residues.append(res)
+    unconstrainted_ratio = 1 - (pos_charge_ratio + neg_charge_ratio)
+    n_neg_charge_res = len(constrained_neg_charge_residues)
+    n_pos_charge_res = len(constrained_pos_charge_residues)
+
+    neg_charged_value = neg_charge_ratio / n_neg_charge_res * unconstrained_logit \
+        * len(unconstrained_residues) / unconstrainted_ratio
+    pos_charged_value = pos_charge_ratio / n_pos_charge_res * n_neg_charge_res \
+        * neg_charged_value / neg_charge_ratio
+
+    nuc = onp.zeros(len(RES_ALPHA))
+
+    unconstrained_res_idxs = [RES_ALPHA.index(res) for res in unconstrained_residues]
+    nuc[unconstrained_res_idxs] = unconstrained_logit
+    nuc[pos_charged_res_idxs] = pos_charged_value
+    nuc[neg_charged_res_idxs] = neg_charged_value
+    nuc_normalized = nuc / nuc.sum()
+
+    pseq = onp.vstack([nuc_normalized]*n)
+    logits = onp.vstack([nuc]*n)
+
+    return pseq, logits

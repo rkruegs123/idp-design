@@ -68,6 +68,8 @@ All design scripts take a core set of arguments, including:
 - `--n-sample-steps`: The number of timesteps for sampling reference states
 - `--sample-every`: The timestep frequency for sampling representative states.
 - `--n-iters`: Number of iterations of gradient descent. Note that this also sets the timescale of annealing a probabilistic sequence to a discrete sequence.
+- `--lr`: The learning rate.
+- `--optimizer-type`: The choice of optimizer (e.g. `adam`, `lamb`).
 
 Additional arguments include the temperature, timestep, and diffusion coefficient. Use `--help` for more details.
 Below, we list arguments that are particularly pertinent to each experiment.
@@ -120,6 +122,24 @@ python3 -m experiments.design_binder \
 
 Unlike previous experiments, this script permits the distribution of simulations across multiple devices.
 Additionally, we employ a bias potential to limit the maximum interstrand distance between the substrate and binder. This bias potential is controlled by `--max-dist` andd `--spring-k`.
+
+## **Design an IDP with a Target Rg constrained to a desired charge distribution**
+```sh
+python3 -m experiments.design_rg_charge_constrained \
+    --run-name <RUN-NAME> \
+    --target-rg <TARGET-VALUE> \
+    --min-pos-charge-ratio <TARGET-POS-CHARGE-RATIO> \
+    --min-neg-charge-ratio <TARGET-NEG-CHARGE-RATIO> \
+    --seq-length <LENGTH> \
+    --histidine-not-charged
+```
+- `TARGET-POS-CHARGE-RATIO`: minimum fraction of the sequence that must be positively charged
+- `TARGET-NEG-CHARGE-RATIO`: minimum fraction of the sequence that must be negatively charged
+
+Note that `TARGET-POS-CHARGE-RATIO + TARGET-NEG-CHARGE-RATIO` cannot exceed `1.0`.
+In practice, we find improved performance if their sum is slightly less than `1.0`.
+If `--histidine-not-charged` is not set, histidine will be considered a positively charged
+residue.
 
 
 ## **Contributing**

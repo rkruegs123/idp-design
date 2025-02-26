@@ -12,3 +12,4 @@ Our library and example optimizations makes use of the following utility functio
 .. autofunction:: idp_design.utils.dump_pos
 .. autofunction:: idp_design.utils.get_argmax_seq
 .. autofunction:: idp_design.utils.sample_discrete_seqs
+.. autofunction:: idp_design.utils.get_charge_constrained_pseq
