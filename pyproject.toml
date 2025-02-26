@@ -3,17 +3,7 @@ name = "idp-design"
 version = "0.1.0"
 description = "Probabilistic sequence-based simulation and optimization of IDPs"
 authors = [{name = "Ryan Krueger", email = "ryan_krueger@g.harvard.edu"}]
-dependencies = [
-    "pytest",
-    "cython",
-    "jax==0.4.31",
-    "matplotlib>=3.8.3",
-    "numpy>=1.24.4",
-    "optax>=0.1.5",
-    "pandas>=1.4.4",
-    "seaborn>=0.13.2",
-    "tqdm>=4.64.0",
-]
+
 
 [tool.setuptools]
 packages = ["idp_design"]
@@ -51,3 +41,7 @@ convention = "google"  # Other options: "numpy", "pep257"
 # Pytest Configuration
 [tool.pytest.ini_options]
 pythonpath = "."
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

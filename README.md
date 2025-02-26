@@ -10,16 +10,32 @@ Additional code is available upon request and will be made public given sufficie
 ![Animation](img/pseq_animation.gif)
 
 
-# **Installation**
+# **Basic Installation**
+
+## **0. Create a New Environment**
+
+We recommend starting with fresh environemtn (via `mamba` or `conda`). All code was tested with Python version `3.8.0`:
+```sh
+mamba create -n <ENV-NAME> python=3.10.13
+mamba activate <ENV-NAME>
+```
 
 ## **1. Clone the Repository**
+Next, clone the repository:
 ```sh
-git clone https://github.com/YOUR-USERNAME/idp-design.git
+git clone https://github.com/rkruegs123/idp-design.git
 cd idp-design
 ```
 
 ## **2. Install Dependencies**
-To install all dependencies in **editable mode**, run:
+You may install the required dependencies via
+```sh
+pip install -r requirements.txt
+```
+Note that by default, we install the CUDA-compatible version of JAX.
+If you would like to install the CPU-only version, please replace `jax[cuda]==0.4.31` with `jax==0.4.31`.
+
+You may then install the package **editable mode** via:
 ```sh
 pip install -e .
 ```
@@ -29,16 +45,12 @@ Lastly, install [`sparrow`](https://github.com/idptools/sparrow) via
 ```sh
 pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
 ```
-and install [`JAX-MD`](https://github.com/jax-md/jax-md) via
-```sh
-pip install https://github.com/jax-md/jax-md/archive/main.zip
-```
 
 
 ## **Testing**
 To ensure everything is working correctly, run:
 ```sh
-pytest
+pytest tests/
 ```
 This will execute all tests inside the `tests/` directory.
 
@@ -55,6 +67,7 @@ All design scripts take a core set of arguments, including:
 - `--n-eq-steps`: The number of equilibration timesteps per simulation
 - `--n-sample-steps`: The number of timesteps for sampling reference states
 - `--sample-every`: The timestep frequency for sampling representative states.
+- `--n-iters`: Number of iterations of gradient descent. Note that this also sets the timescale of annealing a probabilistic sequence to a discrete sequence.
 
 Additional arguments include the temperature, timestep, and diffusion coefficient. Use `--help` for more details.
 Below, we list arguments that are particularly pertinent to each experiment.
@@ -62,7 +75,10 @@ Below, we list arguments that are particularly pertinent to each experiment.
 ## **Design an IDP with a Target Rg**
 To design an IDP that **optimizes its radius of gyration (Rg)**:
 ```sh
-python3 -m experiments.design_rg --run-name <RUN-NAME> --seq-length <LENGTH> --target-rg <TARGET-VALUE>
+python3 -m experiments.design_rg \
+    --run-name <RUN-NAME> \
+    --seq-length <LENGTH> \
+    --target-rg <TARGET-VALUE>
 ```
 - `TARGET-VALUE`: The target Rg in **Angstroms**.
 - `LENGTH`: The length of the IDP.
@@ -72,7 +88,12 @@ python3 -m experiments.design_rg --run-name <RUN-NAME> --seq-length <LENGTH> --t
 ## **Design an IDP as a Salt Sensor**
 To design an IDP that **expands or contracts based on salt concentration**, run:
 ```sh
-python3 -m experiments.design_rg_salt_sensor --run-name <RUN-NAME> --seq-length <LENGTH> --salt-lo 150 --salt-hi 450 --mode MODE
+python3 -m experiments.design_rg_salt_sensor \
+    --run-name <RUN-NAME> \
+    --seq-length <LENGTH> \
+    --salt-lo 150 \
+    --salt-hi 450 \
+    --mode <MODE>
 ```
 - `MODE`: Choose `"expander"` or `"contractor"`.
 - `LENGTH`: The length of the IDP.
@@ -87,11 +108,19 @@ You can adjust these values using the corresponding flags.
 ## **Design an IDP binder for a given IDP substrate**
 To design an IDP of length `N` that **strongly binds a second, fixed IDP** with sequence `<SUBSTRATE>`, run:
 ```sh
-python3 -m experiments.design_binder --run-name <RUN-NAME> --substrate <SUBSTRATE> --binder-length N --n-devices <N-DEVICES> --n-sims-per-device <N-SIMS-PER-DEVICE> --max-dist <MAX-DIST> --spring-k <SPRING-K>
+python3 -m experiments.design_binder \
+    --run-name <RUN-NAME> \
+    --substrate <SUBSTRATE> \
+    --binder-length N \
+    --n-devices <N-DEVICES> \
+    --n-sims-per-device <N-SIMS-PER-DEVICE> \
+    --max-dist <MAX-DIST> \
+    --spring-k <SPRING-K>
 ```
 
 Unlike previous experiments, this script permits the distribution of simulations across multiple devices.
 Additionally, we employ a bias potential to limit the maximum interstrand distance between the substrate and binder. This bias potential is controlled by `--max-dist` andd `--spring-k`.
+
 
 ## **Contributing**
 If you have suggestions, feel free to **open an issue** or **submit a pull request**.
