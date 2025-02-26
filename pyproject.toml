@@ -26,6 +26,7 @@ select = [
 ignore = [
     "D100",  # Missing docstring in public module
     "D104",  # Missing docstring in package
+    "D301",  # Ignore raw docstring warnings
 ]
 
 ## Formatting (like Black)

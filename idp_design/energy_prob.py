@@ -12,8 +12,7 @@ mapped_wang_frenkel = vmap(utils._wang_frenkel, in_axes=(None, 0, 0, 0, 0 ,0))
 mapped_coul = vmap(utils._coul, in_axes=(None, 0, None, None, 0))
 
 def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
-    """
-    Generates energy functions for a probabilistic sequence representation.
+    """Generates energy functions for a probabilistic sequence representation.
 
     This function constructs two energy functions:
 

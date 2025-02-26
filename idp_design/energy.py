@@ -1,5 +1,6 @@
 
-from typing import Callable, Tuple
+from collections.abc import Callable
+
 import jax
 import jax.numpy as jnp
 from jax import vmap
@@ -17,9 +18,8 @@ def get_energy_fn(
     base_unbonded_nbrs: jnp.ndarray,
     displacement_fn: Callable,
     use_gg: bool = True
-) -> Tuple[Callable, Callable]:
-    """
-    Generates energy functions for bonded and unbonded interactions.
+) -> tuple[Callable, Callable]:
+    """Generates energy functions for bonded and unbonded interactions.
 
     This function constructs two energy functions:
 
@@ -34,15 +34,17 @@ def get_energy_fn(
     Args:
       bonded_nbrs: A `(m, 2)` JAX array specifying `m` bonded neighbor pairs.
       base_unbonded_nbrs: A `(p, 2)` JAX array specifying `p` unbonded neighbor pairs.
-      displacement_fn: A function that computes displacement vectors between two positions,
-        following JAX-MD conventions.
-      use_gg: Whether to use the Mpipi-GG force field (`True`) or standard Mpipi force field (`False`).
-        Defaults to `True`.
+      displacement_fn: A function that computes displacement vectors between two
+        positions, following JAX-MD conventions.
+      use_gg: Whether to use the Mpipi-GG force field (`True`) or standard Mpipi force
+        field (`False`). Defaults to `True`.
 
     Returns:
       A tuple of two functions
-        - `subterms_fn`, which takes `(R, seq, unbonded_nbrs)` as input and computes total energy and individual energy terms
-        - `energy_fn`, which takes `(R, seq, unbonded_nbrs)` as input and computes only the total energy.
+        - `subterms_fn`, which takes `(R, seq, unbonded_nbrs)` as input and computes
+          total energy and individual energy terms
+        - `energy_fn`, which takes `(R, seq, unbonded_nbrs)` as input and computes only
+          the total energy.
 
     Example:
         >>> bonded_nbrs = jnp.array([[0, 1], [1, 2]])

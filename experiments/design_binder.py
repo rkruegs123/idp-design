@@ -119,12 +119,11 @@ def run(args):
 
         substrate_pseq = pseq[:len_substrate]
         substrate_mass = utils.get_pseq_mass(substrate_pseq)
-        substrate_com = observable.compute_com(R[:len_substrate], substrate_mass)
+        substrate_com = observable.com(R[:len_substrate], substrate_mass)
 
         binder_pseq = pseq[len_substrate:]
         binder_mass = utils.get_pseq_mass(binder_pseq)
-        # binder_com = observable.compute_com(R[len_substrate], binder_mass) # FIXME: there's a bug here!
-        binder_com = observable.compute_com(R[len_substrate:], binder_mass)
+        binder_com = observable.com(R[len_substrate:], binder_mass)
 
         return space.distance(displacement_fn(substrate_com, binder_com))
 
