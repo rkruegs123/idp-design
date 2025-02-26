@@ -51,6 +51,14 @@ All design scripts save results in a specified directory within the `output` fol
 mkdir output
 ```
 
+All design scripts take a core set of arguments, including:
+- `--n-eq-steps`: The number of equilibration timesteps per simulation
+- `--n-sample-steps`: The number of timesteps for sampling reference states
+- `--sample-every`: The timestep frequency for sampling representative states.
+
+Additional arguments include the temperature, timestep, and diffusion coefficient. Use `--help` for more details.
+Below, we list arguments that are particularly pertinent to each experiment.
+
 ## **Design an IDP with a Target Rg**
 To design an IDP that **optimizes its radius of gyration (Rg)**:
 ```sh
@@ -76,6 +84,14 @@ By default, salt concentrations are:
 
 You can adjust these values using the corresponding flags.
 
+## **Design an IDP binder for a given IDP substrate**
+To design an IDP of length `N` that **strongly binds a second, fixed IDP** with sequence `<SUBSTRATE>`, run:
+```sh
+python3 -m experiments.design_binder --run-name <RUN-NAME> --substrate <SUBSTRATE> --binder-length N --n-devices <N-DEVICES> --n-sims-per-device <N-SIMS-PER-DEVICE> --max-dist <MAX-DIST> --spring-k <SPRING-K>
+```
+
+Unlike previous experiments, this script permits the distribution of simulations across multiple devices.
+Additionally, we employ a bias potential to limit the maximum interstrand distance between the substrate and binder. This bias potential is controlled by `--max-dist` andd `--spring-k`.
 
 ## **Contributing**
 If you have suggestions, feel free to **open an issue** or **submit a pull request**.

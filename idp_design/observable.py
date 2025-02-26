@@ -3,10 +3,34 @@ from jax import vmap
 from jax_md import space
 
 
-def _compute_com(R, mass):
+def compute_com(R: jnp.ndarray, mass: jnp.ndarray) -> jnp.ndarray:
+    """
+    Computes the center of mass (COM) for a set of weighted positions.
+
+    The center of mass is calculated as:
+
+    .. math::
+
+        \\text{COM} = \\frac{\\sum_i m_i \\mathbf{R}_i}{\\sum_i m_i}
+
+    where :math:`m_i` are the masses, and :math:`\\mathbf{R}_i` are the corresponding positions.
+
+    :param jnp.ndarray R: A ``(n, 3)`` JAX array representing ``n`` positions in 3D space.
+    :param jnp.ndarray mass: A ``(n,)`` JAX array containing the mass of each particle.
+
+    :returns: The computed center of mass as a ``(3,)`` JAX array.
+    :rtype: jnp.ndarray
+
+    Example:
+        >>> R = jnp.array([[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]])
+        >>> mass = jnp.array([1.0, 2.0])
+        >>> compute_com(R, mass)
+        Array([0.6666667, 1.3333334, 2. ], dtype=float32)
+    """
     weighted_sum = jnp.sum(jnp.multiply(R, jnp.expand_dims(mass, axis=1)), axis=0)
     com = weighted_sum / jnp.sum(mass)
     return com
+
 
 def rg(R, mass, displacement_fn):
     """
@@ -36,7 +60,7 @@ def rg(R, mass, displacement_fn):
         >>> rg(R, mass, displacement_fn)
         Array(0.5, dtype=float32)
     """
-    com = _compute_com(R, mass)
+    com = compute_com(R, mass)
     drs = vmap(displacement_fn, (None, 0))(com, R)
     rs = space.distance(drs)
 
