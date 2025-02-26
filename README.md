@@ -79,6 +79,7 @@ You can adjust these values using the corresponding flags.
 
 ## **Contributing**
 If you have suggestions, feel free to **open an issue** or **submit a pull request**.
+To maintain code quality standards, please ensure that any contributed code passes linting checks via `ruff check idp_design/`.
 
 
 # Citation

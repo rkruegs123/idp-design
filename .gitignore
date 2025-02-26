@@ -18,6 +18,7 @@ dist/
 
 # Sphinx documentation build output
 docs/_build/
+docs/build/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints

@@ -12,13 +12,16 @@ mapped_wang_frenkel = vmap(utils._wang_frenkel, in_axes=(None, 0, 0, 0, 0 ,0))
 mapped_coul = vmap(utils._coul, in_axes=(None, 0, None, None, 0))
 
 def get_energy_fn(bonded_nbrs, base_unbonded_nbrs, displacement_fn, use_gg=True):
-    """Generates energy functions for a probabilistic sequence representation.
+    """
+    Generates energy functions for a probabilistic sequence representation.
 
     This function constructs two energy functions:
+
     - `subterms_fn`: Computes individual energy contributions, including
       total bonded, total unbonded, Wang-Frenkel, and Coulomb interactions
       based on a **probabilistic sequence** representation.
     - `energy_fn`: Computes the total expected energy of the system.
+
 
     Unlike standard energy functions for discrete sequences, this function
     computes the **expected energy** by marginalizing over all possible
