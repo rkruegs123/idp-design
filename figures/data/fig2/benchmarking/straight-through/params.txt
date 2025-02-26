@@ -1,0 +1,16 @@
+output_basedir: output/
+run_name: test-straight-through-v2
+seq_length: 50
+out_box_size: 200.0
+key: 0
+n_eq_steps: 25000
+n_sample_steps: 50000
+sample_every: 1000
+n_sims: 5
+kt: 0.59616123
+dt: 0.2
+gamma: 0.001
+n_iters: 100
+plot_every: 3
+lr: 0.1
+target_rg: 12.5

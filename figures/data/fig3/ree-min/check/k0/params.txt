@@ -1,0 +1,26 @@
+simulation aa_seq: WWWFFHHHHFHHHFHHHHHHHHHHHHHHHFFHHYHHHHYHYHQHHHHWWW
+output_basedir: output
+run_name: check-ree-min-k0
+seq_length: 100
+aa_seq: WWWFFHHHHFHHHFHHHHHHHHHHHHHHHFFHHYHHHHYHYHQHHHHWWW
+key: 0
+out_box_size: 200.0
+n_sims: 10
+n_eq_steps: 100000
+n_sample_steps: 500000
+sample_every: 1000
+kt: 0.59616123
+salt_conc: 150.0
+dt: 0.2
+gamma: 0.001
+n_discrete_check: 0
+solns_csv: None
+soln_n: None
+soln_target: None
+soln_key: None
+load_pseq: False
+load_pseq_path: None
+write_pos: True
+write_cm_gif: False
+write_rgs: False
+write_rees: False

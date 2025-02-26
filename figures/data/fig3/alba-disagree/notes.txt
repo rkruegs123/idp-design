@@ -1,0 +1,5 @@
+n50-rg32.5 is originally named n50-rg32.5-100iters-longer
+n75-rg42.5 is originally named n75-rg42.5-100iters-longer
+n75-rg45 is originally named n75-rg45-100iters-longer
+n75-rg47.5 is originally named n75-rg47.5-100iters-longer
+n75-rg50 is originally named n75-rg50-100iters-longer

@@ -1,0 +1,6 @@
+Avg. grad time: 40.49682221412659
+Std. grad time: 0.006182340853191959
+Avg. sim time (discrete): 3.158525228500366
+Std. sim time (discrete): 0.00019730637743970803
+Avg. sim time (prob): 5.196167802810669
+Std. sim time (prob): 0.0010319586965423964

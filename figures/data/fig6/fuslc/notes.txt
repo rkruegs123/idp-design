@@ -1,0 +1,1 @@
+we call it "forward" instead of "check" because it's mostly to get the traj for pulling out repr configuratios
