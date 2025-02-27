@@ -418,11 +418,11 @@ def get_parser():
     parser.add_argument('--key', type=int, default=0)
     parser.add_argument('--out-box-size', type=float, default=200.0,
                         help="Length of the box for injavis visualization")
-    parser.add_argument('--n-sims-per-device', type=int, default=2,
+    parser.add_argument('--n-sims-per-device', type=int, default=5,
                         help="Number of independent simulations")
-    parser.add_argument('--n-eq-steps', type=int, default=10000,
+    parser.add_argument('--n-eq-steps', type=int, default=25000,
                         help="Number of equilibration steps")
-    parser.add_argument('--n-sample-steps', type=int, default=200000,
+    parser.add_argument('--n-sample-steps', type=int, default=750000,
                         help="Number of steps from which to sample states")
     parser.add_argument('--sample-every', type=int, default=1000,
                         help="Frequency of sampling reference states.")
@@ -433,9 +433,9 @@ def get_parser():
     parser.add_argument('--gamma', type=float, default=0.001,
                         help="Friction coefficient for Langevin integrator")
 
-    parser.add_argument('--max-dist', type=float, default=10.0,
+    parser.add_argument('--max-dist', type=float, default=150.0,
                         help="Distance at which we start applying a harmonic constraint")
-    parser.add_argument('--spring-k', type=float, default=1000.0,
+    parser.add_argument('--spring-k', type=float, default=10.0,
                         help="Spring constant for applying maximum distance")
 
     parser.add_argument('--gumbel-start', type=float, default=1.0,

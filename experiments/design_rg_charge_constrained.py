@@ -577,13 +577,13 @@ def get_parser():
     )
     parser.add_argument('--run-name', type=str, help='Run name')
 
-    parser.add_argument('--n-iters', type=int, default=100,
+    parser.add_argument('--n-iters', type=int, default=200,
                         help="Number of iterations of gradient descent")
-    parser.add_argument('--lr', type=float, default=1e-4,
+    parser.add_argument('--lr', type=float, default=0.001,
                         help="Learning rate")
     parser.add_argument('--min-neff-factor', type=float, default=0.95,
                         help="Factor for determining min Neff")
-    parser.add_argument('--max-approx-iters', type=int, default=3,
+    parser.add_argument('--max-approx-iters', type=int, default=5,
                         help="Maximum number of iterations before resampling")
     parser.add_argument('--seq-length', type=int, default=100,
                         help="Sequence length")
@@ -597,13 +597,13 @@ def get_parser():
 
     # Simulation arguments
     parser.add_argument('--key', type=int, default=0)
-    parser.add_argument('--out-box-size', type=float, default=200.0,
+    parser.add_argument('--out-box-size', type=float, default=400.0,
                         help="Length of the box for injavis visualization")
-    parser.add_argument('--n-sims', type=int, default=5,
+    parser.add_argument('--n-sims', type=int, default=15,
                         help="Number of independent simulations")
     parser.add_argument('--n-eq-steps', type=int, default=10000,
                         help="Number of equilibration steps")
-    parser.add_argument('--n-sample-steps', type=int, default=200000,
+    parser.add_argument('--n-sample-steps', type=int, default=500000,
                         help="Number of steps from which to sample states")
     parser.add_argument('--sample-every', type=int, default=1000,
                         help="Frequency of sampling reference states.")
@@ -623,12 +623,6 @@ def get_parser():
                         help="Minimum ratio that is positively charged")
     parser.add_argument('--min-neg-charge-ratio', type=float, default=0.2,
                         help="Minimum ratio that is negatively charged")
-
-
-    parser.add_argument('--init-pos-ratio', type=float, default=0.3,
-                        help="Ratio of pseq to be initialized as + charge residues. Used with scaled-custom option.")
-    parser.add_argument('--init-neg-ratio', type=float, default=0.3,
-                        help="Ratio of pseq to be initialized as - charge residues. Used with scaled-custom option.")
 
     parser.add_argument('--nn-features', type=int, default=4000,
                         help="Number of features for the MLP")
