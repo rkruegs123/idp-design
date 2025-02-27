@@ -446,11 +446,11 @@ def get_parser():
     parser.add_argument('--key', type=int, default=0)
     parser.add_argument('--out-box-size', type=float, default=200.0,
                         help="Length of the box for injavis visualization")
-    parser.add_argument('--n-sims', type=int, default=15,
+    parser.add_argument('--n-sims', type=int, default=10,
                         help="Number of independent simulations")
     parser.add_argument('--n-eq-steps', type=int, default=10000,
                         help="Number of equilibration steps")
-    parser.add_argument('--n-sample-steps', type=int, default=500000,
+    parser.add_argument('--n-sample-steps', type=int, default=250000,
                         help="Number of steps from which to sample states")
     parser.add_argument('--sample-every', type=int, default=1000,
                         help="Frequency of sampling reference states.")
