@@ -12,10 +12,6 @@ It uses JAX both for molecular dynamics simulations and for automatic differenti
 Check out the :doc:`usage` section for further information, including how to
 :ref:`install <installation>` the project.
 
-.. note::
-
-   This project is under active development.
-
 
 .. toctree::
    :maxdepth: 2

@@ -118,8 +118,8 @@ python3 -m experiments.design_rg_salt_sensor \
 - Results will be stored in `output/RUN-NAME`.
 
 By default, salt concentrations are:
-  - **Low salt**: 150 mM (`--salt-lo 150`)
-  - **High salt**: 450 mM (`--salt-hi 450`)
+- **Low salt**: 150 mM (`--salt-lo 150`)
+- **High salt**: 450 mM (`--salt-hi 450`)
 
 You can adjust these values using the corresponding flags.
 
