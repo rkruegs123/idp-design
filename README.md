@@ -1,11 +1,13 @@
 # idp-design
 
 This repository contains code corresponding to the paper titled **"[Generalized design of sequence-ensemble-function relationships for intrinsically disordered proteins](https://doi.org/10.1101/2024.10.10.617695)."**
-We provide code for **two example optimizations**:
+We provide code for **four example optimizations**:
 - **Radius of Gyration (Rg) optimization**
 - **Salt sensor optimization**
+- **Charge-constrained Rg optimization**
+- **Binder optimization**
 
-Additional code is available upon request and will be made public given sufficient demand.
+Additional code is available upon request.
 
 ![Animation](img/pseq_animation.gif)
 
@@ -14,7 +16,7 @@ Additional code is available upon request and will be made public given sufficie
 
 ## **0. Create a New Environment**
 
-We recommend starting with fresh environemtn (via `mamba` or `conda`). All code was tested with Python version `3.8.0`:
+We recommend starting with fresh environemnt (via `mamba` or `conda`). All code was tested with Python version `3.10.13`:
 ```sh
 mamba create -n <ENV-NAME> python=3.10.13
 mamba activate <ENV-NAME>
@@ -55,6 +57,18 @@ pytest tests/
 This will execute all tests inside the `tests/` directory.
 
 
+# **Documentation**
+
+The project documentation is generated using **Sphinx**. To build the documentation locally, run:
+```sh
+cd docs
+make html
+```
+This will generate the HTML documentation inside the `docs/build/html/` directory. Open `index.html` in a web browser to view the documentation.
+
+For any modifications to the documentation, edit the source files inside `docs/`, then rebuild using `make html`.
+
+
 # **Usage**
 
 All design scripts save results in a specified directory within the `output` folder.
@@ -72,23 +86,23 @@ All design scripts take a core set of arguments, including:
 - `--optimizer-type`: The choice of optimizer (e.g. `adam`, `lamb`).
 
 Additional arguments include the temperature, timestep, and diffusion coefficient. Use `--help` for more details.
-Below, we list arguments that are particularly pertinent to each experiment.
+Below, we list a subset of arguments that are particularly pertinent to each experiment.
 
 ## **Design an IDP with a Target Rg**
-To design an IDP that **optimizes its radius of gyration (Rg)**:
+To design an IDP with a target **radius of gyration (Rg)**:
 ```sh
 python3 -m experiments.design_rg \
     --run-name <RUN-NAME> \
     --seq-length <LENGTH> \
     --target-rg <TARGET-VALUE>
 ```
-- `TARGET-VALUE`: The target Rg in **Angstroms**.
+- `TARGET-VALUE`: The target Rg in Angstroms.
 - `LENGTH`: The length of the IDP.
-- **Results will be stored in** `output/RUN-NAME`.
+- Results will be stored in `output/RUN-NAME`.
 
 
 ## **Design an IDP as a Salt Sensor**
-To design an IDP that **expands or contracts based on salt concentration**, run:
+To design an IDP that **expands or contracts based on salt concentration**:
 ```sh
 python3 -m experiments.design_rg_salt_sensor \
     --run-name <RUN-NAME> \
@@ -99,7 +113,7 @@ python3 -m experiments.design_rg_salt_sensor \
 ```
 - `MODE`: Choose `"expander"` or `"contractor"`.
 - `LENGTH`: The length of the IDP.
-- **Results will be stored in** `output/RUN-NAME`.
+- Results will be stored in `output/RUN-NAME`.
 
 By default, salt concentrations are:
   - **Low salt**: 150 mM (`--salt-lo 150`)
@@ -108,22 +122,25 @@ By default, salt concentrations are:
 You can adjust these values using the corresponding flags.
 
 ## **Design an IDP binder for a given IDP substrate**
-To design an IDP of length `N` that **strongly binds a second, fixed IDP** with sequence `<SUBSTRATE>`, run:
+To design an IDP that **strongly binds a second, fixed IDP** with sequence `<SUBSTRATE>`:
 ```sh
 python3 -m experiments.design_binder \
     --run-name <RUN-NAME> \
     --substrate <SUBSTRATE> \
-    --binder-length N \
+    --binder-length <BINDER-LENGTH> \
     --n-devices <N-DEVICES> \
     --n-sims-per-device <N-SIMS-PER-DEVICE> \
     --max-dist <MAX-DIST> \
     --spring-k <SPRING-K>
 ```
+- `BINDER-LENGTH`: the length of the optimized binder.
+- Results will be stored in `output/RUN-NAME`.
 
 Unlike previous experiments, this script permits the distribution of simulations across multiple devices.
 Additionally, we employ a bias potential to limit the maximum interstrand distance between the substrate and binder. This bias potential is controlled by `--max-dist` andd `--spring-k`.
 
 ## **Design an IDP with a Target Rg constrained to a desired charge distribution**
+To design an IDP with a target **radius of gyration (Rg)** and a target **charge distribution**:
 ```sh
 python3 -m experiments.design_rg_charge_constrained \
     --run-name <RUN-NAME> \
@@ -133,8 +150,9 @@ python3 -m experiments.design_rg_charge_constrained \
     --seq-length <LENGTH> \
     --histidine-not-charged
 ```
-- `TARGET-POS-CHARGE-RATIO`: minimum fraction of the sequence that must be positively charged
-- `TARGET-NEG-CHARGE-RATIO`: minimum fraction of the sequence that must be negatively charged
+- `TARGET-POS-CHARGE-RATIO`: minimum fraction of the sequence that must be positively charged.
+- `TARGET-NEG-CHARGE-RATIO`: minimum fraction of the sequence that must be negatively charged.
+- Results will be stored in `output/RUN-NAME`.
 
 Note that `TARGET-POS-CHARGE-RATIO + TARGET-NEG-CHARGE-RATIO` cannot exceed `1.0`.
 In practice, we find improved performance if their sum is slightly less than `1.0`.
@@ -154,7 +172,7 @@ This notebook has several additional dependencies, installable via:
 ```sh
 pip install seaborn
 pip install logomaker
-conda install jupyter
+mamba install jupyter
 ```
 
 
