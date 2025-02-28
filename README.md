@@ -88,6 +88,8 @@ All design scripts take a core set of arguments, including:
 Additional arguments include the temperature, timestep, and diffusion coefficient. Use `--help` for more details.
 Below, we list a subset of arguments that are particularly pertinent to each experiment.
 
+See the documentation for specific example specifications for each example.
+
 ## **Design an IDP with a Target Rg**
 To design an IDP with a target **radius of gyration (Rg)**:
 ```sh
