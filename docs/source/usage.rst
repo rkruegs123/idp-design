@@ -39,7 +39,13 @@ You may install the required dependencies via
 Note that by default, we install the CUDA-compatible version of JAX.
 If you would like to install the CPU-only version, please replace :code:`jax[cuda]==0.4.31` with :code:`jax==0.4.31`.
 
-You may then install the package **editable mode** via:
+You then must install `sparrow <https://github.com/idptools/sparrow/>`_ via
+
+.. code-block:: console
+
+    pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
+
+Finally, you may then install the package **editable mode** via:
 
 .. code-block:: console
 
@@ -47,11 +53,6 @@ You may then install the package **editable mode** via:
 
 This allows you to modify the code and have changes reflected immediately without reinstalling.
 
-Lastly, install `sparrow <https://github.com/idptools/sparrow/>`_ via
-
-.. code-block:: console
-
-    pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
 
 
 Testing
