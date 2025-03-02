@@ -1,12 +1,16 @@
 import io
 import random
+from pathlib import Path
 
 import jax
 import jax.numpy as jnp
 import numpy as onp
 import pandas as pd
+import pkg_resources
 from jax import tree_util, vmap
 from tqdm import tqdm
+
+PARAMS_BASEDIR = Path(pkg_resources.resource_filename("idp_design", "params"))
 
 kb = 0.0019872041
 
@@ -336,8 +340,8 @@ def read_traj_file(fpath, n_atoms):
     return all_pos, all_timesteps
 
 
-WF_GG_PATH = "params/wf_gg.txt"
-WF_PATH = "params/wf.txt"
+WF_GG_PATH = PARAMS_BASEDIR / "wf_gg.txt"
+WF_PATH = PARAMS_BASEDIR / "wf.txt"
 def _read_wf(fpath=WF_GG_PATH):
     wf_df = pd.read_csv(
         fpath, sep=r'\s+', header=None,
@@ -379,8 +383,8 @@ def _read_wf(fpath=WF_GG_PATH):
 
     return eps_table, sigma_table, nu_table, mu_table, rc_table
 
-DEBYE_GG_PATH = "params/debye_gg.txt"
-DEBYE_PATH = "params/debye.txt"
+DEBYE_GG_PATH = PARAMS_BASEDIR / "debye_gg.txt"
+DEBYE_PATH = PARAMS_BASEDIR / "debye.txt"
 def _read_debye(default_cutoff=0.0, fpath=DEBYE_GG_PATH):
     debye_df = pd.read_csv(
         fpath, sep=r'\s+', header=None,
