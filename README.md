@@ -42,7 +42,7 @@ You then must install [`sparrow`](https://github.com/idptools/sparrow) via
 pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
 ```
 
-Finally, you may then install the package **editable mode** via:
+Finally, you may then install the package in **editable mode** via:
 ```sh
 pip install -e .
 ```

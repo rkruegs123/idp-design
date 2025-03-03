@@ -45,7 +45,7 @@ You then must install `sparrow <https://github.com/idptools/sparrow/>`_ via
 
     pip install git+https://git@github.com/idptools/sparrow.git@a770f78013e6399d992e53921540e559defef94b
 
-Finally, you may then install the package **editable mode** via:
+Finally, you may then install the package in **editable mode** via:
 
 .. code-block:: console
 
@@ -220,13 +220,15 @@ In practice, we find improved performance if their sum is slightly less than :co
 If :code:`--histidine-not-charged` is not set, histidine will be considered a positively charged
 residue.
 
-For example, to design an IDP of length ``50`` with ``Rg = 17.5`` and a ``+/-`` charge distribution of ``50/50``, run
+For example, to design an IDP of length ``50`` with ``Rg = 10.0`` and a ``+/-`` charge distribution of ``50/50``, run
 
 .. code-block:: console
 
     python3 -m experiments.design_rg_charge_constrained \
             --run-name test-charge-constrained-k1 \
-            --target-rg 17.5 --min-pos-charge-ratio 0.495 --min-neg-charge-ratio 0.495 \
+            --target-rg 20.0 \
+            --min-pos-charge-ratio 0.495 \
+            --min-neg-charge-ratio 0.495 \
             --n-iters 200 \
             --seq-length 50 \
             --histidine-not-charged \
