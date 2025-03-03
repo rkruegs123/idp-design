@@ -97,7 +97,7 @@ To design an IDP with a target **radius of gyration (Rg)**:
 
 .. code-block:: console
 
-    python3 -m experiments.design_rg \
+    python3 -m examples.design_rg \
         --run-name <RUN-NAME> \
         --seq-length <LENGTH> \
         --target-rg <TARGET-VALUE>
@@ -110,7 +110,7 @@ For example, to design an IDP of length ``50`` with ``Rg = 20``, run
 
 .. code-block:: console
 
-    python3 -m experiments.design_rg \
+    python3 -m examples.design_rg \
         --run-name <RUN-NAME> \
         --seq-length 50 \
         --target-rg 20.0 \
@@ -126,7 +126,7 @@ To design an IDP that **expands or contracts based on salt concentration**:
 
 .. code-block:: console
 
-    python3 -m experiments.design_rg_salt_sensor \
+    python3 -m examples.design_rg_salt_sensor \
         --run-name <RUN-NAME> \
         --seq-length <LENGTH> \
         --salt-lo 150 \
@@ -149,7 +149,7 @@ For example, to design an IDP of length ``50`` that contracts upon an increase i
 
 .. code-block:: console
 
-    python3 -m experiments.design_rg_salt_sensor \
+    python3 -m examples.design_rg_salt_sensor \
         --run-name <RUN-NAME> \
         --seq-length 50 \
         --n-iters 100 \
@@ -165,7 +165,7 @@ To design an IDP that **strongly binds a second, fixed IDP** with sequence ``<SU
 
 .. code-block:: console
 
-    python3 -m experiments.design_binder \
+    python3 -m examples.design_binder \
         --run-name <RUN-NAME> \
         --substrate <SUBSTRATE> \
         --binder-length <BINDER-LENGTH> \
@@ -184,7 +184,7 @@ For example, to design an IDP of length ``30`` strongly binds a polyR sequence o
 
 .. code-block:: console
 
-    python3 -m experiments.design_binder \
+    python3 -m examples.design_binder \
     --run-name <RUN-NAME> \
     --substrate RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR \
     --binder-length 30 \
@@ -203,7 +203,7 @@ To design an IDP with a target **radius of gyration (Rg)** and a target **charge
 
 .. code-block:: console
 
-    python3 -m experiments.design_rg_charge_constrained \
+    python3 -m examples.design_rg_charge_constrained \
         --run-name <RUN-NAME> \
         --target-rg <TARGET-VALUE> \
         --min-pos-charge-ratio <TARGET-POS-CHARGE-RATIO> \
@@ -224,7 +224,7 @@ For example, to design an IDP of length ``50`` with ``Rg = 10.0`` and a ``+/-`` 
 
 .. code-block:: console
 
-    python3 -m experiments.design_rg_charge_constrained \
+    python3 -m examples.design_rg_charge_constrained \
             --run-name test-charge-constrained-k1 \
             --target-rg 20.0 \
             --min-pos-charge-ratio 0.495 \

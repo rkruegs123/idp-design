@@ -94,7 +94,7 @@ See the documentation for specific example specifications for each example.
 ## **Design an IDP with a Target Rg**
 To design an IDP with a target **radius of gyration (Rg)**:
 ```sh
-python3 -m experiments.design_rg \
+python3 -m examples.design_rg \
     --run-name <RUN-NAME> \
     --seq-length <LENGTH> \
     --target-rg <TARGET-VALUE>
@@ -107,7 +107,7 @@ python3 -m experiments.design_rg \
 ## **Design an IDP as a Salt Sensor**
 To design an IDP that **expands or contracts based on salt concentration**:
 ```sh
-python3 -m experiments.design_rg_salt_sensor \
+python3 -m examples.design_rg_salt_sensor \
     --run-name <RUN-NAME> \
     --seq-length <LENGTH> \
     --salt-lo 150 \
@@ -127,7 +127,7 @@ You can adjust these values using the corresponding flags.
 ## **Design an IDP binder for a given IDP substrate**
 To design an IDP that **strongly binds a second, fixed IDP** with sequence `<SUBSTRATE>`:
 ```sh
-python3 -m experiments.design_binder \
+python3 -m examples.design_binder \
     --run-name <RUN-NAME> \
     --substrate <SUBSTRATE> \
     --binder-length <BINDER-LENGTH> \
@@ -145,7 +145,7 @@ Additionally, we employ a bias potential to limit the maximum interstrand distan
 ## **Design an IDP with a Target Rg constrained to a desired charge distribution**
 To design an IDP with a target **radius of gyration (Rg)** and a target **charge distribution**:
 ```sh
-python3 -m experiments.design_rg_charge_constrained \
+python3 -m examples.design_rg_charge_constrained \
     --run-name <RUN-NAME> \
     --target-rg <TARGET-VALUE> \
     --min-pos-charge-ratio <TARGET-POS-CHARGE-RATIO> \
