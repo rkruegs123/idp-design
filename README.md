@@ -1,7 +1,8 @@
 # idp-design
 
 [![bioRxiv](https://img.shields.io/badge/bioRxiv-2024.10.10.617695-B31B1B.svg)](https://www.biorxiv.org/content/10.1101/2024.10.10.617695v1)
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkruegs123/idp-design/blob/refactor/examples/design_example.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkruegs123/idp-design/blob/refactor/examples/design_custom.ipynb)
+
 
 
 This repository contains code corresponding to the paper titled **"[Generalized design of sequence-ensemble-function relationships for intrinsically disordered proteins](https://doi.org/10.1101/2024.10.10.617695)."**
