@@ -1,5 +1,8 @@
 # idp-design
 
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-2024.10.10.617695-B31B1B.svg)](https://www.biorxiv.org/content/10.1101/2024.10.10.617695v1)
+
+
 This repository contains code corresponding to the paper titled **"[Generalized design of sequence-ensemble-function relationships for intrinsically disordered proteins](https://doi.org/10.1101/2024.10.10.617695)."**
 We provide code for **four example optimizations**:
 - **Radius of Gyration (Rg) optimization**
