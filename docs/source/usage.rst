@@ -220,7 +220,7 @@ In practice, we find improved performance if their sum is slightly less than :co
 If :code:`--histidine-not-charged` is not set, histidine will be considered a positively charged
 residue.
 
-For example, to design an IDP of length ``50`` with ``Rg = 10.0`` and a ``+/-`` charge distribution of ``50/50``, run
+For example, to design an IDP of length ``50`` with ``Rg = 20.0`` and a ``+/-`` charge distribution of ``50/50``, run
 
 .. code-block:: console
 

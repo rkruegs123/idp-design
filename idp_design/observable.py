@@ -34,7 +34,7 @@ def com(R: jnp.ndarray, mass: jnp.ndarray) -> jnp.ndarray:
 
 
 def rg(R, mass, displacement_fn):
-    r"""Computes the radius of gyration (Rg) for a set of positions and masses.
+    """Computes the radius of gyration (Rg) for a set of positions and masses.
 
     The radius of gyration is a measure of the spatial distribution of a system
     relative to its center of mass. It is computed as:
