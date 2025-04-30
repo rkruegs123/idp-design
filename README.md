@@ -1,7 +1,7 @@
 # idp-design
 
 [![bioRxiv](https://img.shields.io/badge/bioRxiv-2024.10.10.617695-B31B1B.svg)](https://www.biorxiv.org/content/10.1101/2024.10.10.617695v1)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkruegs123/idp-design/blob/refactor/examples/design_custom.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkruegs123/idp-design/blob/master/examples/design_custom.ipynb)
 
 
 
