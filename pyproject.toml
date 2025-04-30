@@ -1,0 +1,48 @@
+[project]
+name = "idp-design"
+version = "0.1.0"
+description = "Probabilistic sequence-based simulation and optimization of IDPs"
+authors = [{name = "Ryan Krueger", email = "ryan_krueger@g.harvard.edu"}]
+
+
+[tool.setuptools]
+packages = ["idp_design"]
+
+# Ruff Configuration
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+## Linting rules
+select = [
+    "E", "F", "W",    # Pyflakes + Pycodestyle (errors, warnings)
+    "C90",            # McCabe complexity checks
+    "I",              # Import sorting
+    "D",              # PEP 257 docstring conventions
+    "UP",             # Pyupgrade (suggests modern Python syntax)
+]
+
+## Ignore some warnings
+ignore = [
+    "D100",  # Missing docstring in public module
+    "D104",  # Missing docstring in package
+    "D301",  # Ignore raw docstring warnings
+]
+
+## Formatting (like Black)
+[tool.ruff.format]
+quote-style = "double"  # Enforce double quotes
+indent-style = "space"
+line-ending = "lf"
+
+## Docstring settings
+[tool.ruff.pydocstyle]
+convention = "google"  # Other options: "numpy", "pep257"
+
+# Pytest Configuration
+[tool.pytest.ini_options]
+pythonpath = "."
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

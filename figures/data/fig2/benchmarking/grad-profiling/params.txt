@@ -1,0 +1,16 @@
+output_basedir: output/
+run_name: test-grad-profiling-s10
+seq_length: 25
+key: 0
+out_box_size: 200.0
+n_eq_steps: 25000
+sample_every: 1000
+n_sims: 1
+kt: 0.59616123
+dt: 0.2
+gamma: 0.001
+target_rg: 12.5
+lo: 5000
+interval: 5000
+hi: 50000
+n_samples: 10

@@ -1,5 +1,6 @@
 --find-links https://storage.googleapis.com/jax-releases/jax_releases.html
 jax[cuda]==0.4.31
+flax==0.8.5
 jax_md @ git+https://github.com/jax-md/jax-md.git@05221c551e71f1b5f64458c0e3533452c22efec0
 matplotlib==3.8.3
 numpy==1.24.4
@@ -9,3 +10,7 @@ seaborn==0.13.2
 cython==3.0.9
 numpy==1.24.4
 tqdm==4.64.0
+sphinx>=8.1.3
+sphinx-autodoc-typehints
+sphinx-rtd-theme
+pytest

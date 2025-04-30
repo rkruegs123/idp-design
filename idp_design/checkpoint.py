@@ -2,8 +2,8 @@
 import functools
 
 import jax
-from jax import tree_util, lax
 import jax.numpy as jnp
+from jax import lax
 
 
 def _split_n_stack(x, n):
@@ -12,12 +12,12 @@ def _split_n_stack(x, n):
 
 
 def _flatten_n(x, n):
-    """Flattens the first `n` dimensions of `xs`"""
+    """Flattens the first `n` dimensions of `xs`."""
     return jax.tree_map(lambda y: jnp.reshape(y, (-1,) + y.shape[n:]), x)
 
 
 def checkpoint_scan(f, init, xs, checkpoint_every):
-    """Replicates the behavior of `lax.scan` but checkpoints gradients every `checkpoint_every` steps."""
+    """Replicates `lax.scan` but checkpoints grads every `checkpoint_every` steps."""
     flat_xs, _ = jax.tree_util.tree_flatten(xs)
     length = flat_xs[0].shape[0]
     outer_iterations, residual = divmod(length, checkpoint_every)
@@ -35,6 +35,7 @@ def checkpoint_scan(f, init, xs, checkpoint_every):
 
 
 def get_scan(checkpoint_every=None):
+    """Wraps `checkpoint_scan` to allow no checkpointing."""
     if checkpoint_every is None:
         scan = lax.scan
     else:

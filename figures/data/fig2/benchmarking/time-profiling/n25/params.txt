@@ -1,0 +1,12 @@
+output_basedir: output/
+run_name: test-time-50k-10
+seq_length: 25
+key: 0
+out_box_size: 200.0
+sample_every: 1000
+kt: 0.59616123
+dt: 0.2
+gamma: 0.001
+target_rg: 12.5
+n_sample_steps: 50000
+n_samples: 10

@@ -1,14 +1,52 @@
+# Byte-compiled / optimized / compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Backup and temporary files
 *~
-**/*~
-**/**/*~
+*.swp
+*.bak
 
-__pycache__
-**/__pycache__
-**/**/__pycache__
+# Output directories
+output/
 
+# Build and distribution directories
+build/
+dist/
+*.egg-info/
+
+# Sphinx documentation build output
+docs/_build/
+docs/build/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Data and log files
+*.log
+*.csv
+*.dat
+*.sqlite
+
+# Media files
+*.mp4
+*.ps
 *.pos
 *.png
 
-output/
+# OS-specific files
+.DS_Store
+Thumbs.db
 
+# Virtual environment folders
+venv/
+.env/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Extra data
+output/
 refdata/**/restart*

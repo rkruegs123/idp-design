@@ -1,0 +1,27 @@
+simulation aa_seq: KKRKKKKRRPKRPRRPRPPRRRPPRRRPPRRRPPRRPPRRPPRPPRRPPRRPPRRRRRRRRRRRRRRKRRKPRKP
+output_basedir: output
+run_name: check-alba-disagree-n75-rg47.5-opt-write
+seq_length: 100
+aa_seq: KKRKKKKRRPKRPRRPRPPRRRPPRRRPPRRRPPRRPPRRPPRPPRRPPRRPPRRRRRRRRRRRRRRKRRKPRKP
+key: 0
+out_box_size: 200.0
+n_sims: 15
+n_eq_steps: 500000
+n_sample_steps: 5000000
+sample_every: 10000
+t_kelvin: 300
+salt_conc: 150.0
+dt: 0.2
+gamma: 0.001
+n_discrete_check: 0
+solns_csv: None
+soln_n: None
+soln_target: None
+soln_key: None
+load_pseq: False
+load_pseq_path: None
+write_pos: True
+write_cm_gif: False
+write_rgs: False
+write_rees: False
+use_hps: False
